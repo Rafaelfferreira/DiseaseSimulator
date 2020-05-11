@@ -7,13 +7,15 @@ enum Environment {
     static let screenHeight: Int = 1000
     //static let proportionButton: Int = 80
     static let proportionGrid: Int = 91
+    static let proportionButton: Int = 60
     static let nLines: Int = 46
     static let nColumns: Int = 46
     
     //constants about colors
     static let neutralColor: UIColor = UIColor(red: 0.890, green: 0.890, blue: 0.890, alpha: 0.6)
     static let infectedColor: UIColor = UIColor(red: 0.172, green: 0.568, blue: 0.203, alpha: 1)
-    
+    static let healthyColor: UIColor = UIColor(red: 0.137, green: 0.619, blue: 0.921, alpha: 1)
+    static let recoveredColor: UIColor = UIColor(red: 0.921, green: 0.905, blue: 0.137, alpha: 1)
     
     // reapropriated from last year
     static let textColor: UIColor = UIColor(red: 0.396, green: 0.803, blue: 0.490, alpha: 1)

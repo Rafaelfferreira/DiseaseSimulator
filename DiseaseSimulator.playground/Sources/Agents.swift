@@ -21,7 +21,7 @@ public class Agent: UIButton {
                 self.backgroundColor = Environment.infectedColor
             }
             else {
-                self.backgroundColor = Environment.neutralColor
+                self.backgroundColor = Environment.healthyColor
             }
         }
     }
@@ -46,9 +46,4 @@ public class Agent: UIButton {
         }
         return validNeighbours
     }
-}
-
-//delegates the managing of a button to another class
-protocol ButtonDelegate: class {
-    func buttonDidPress(_ button: UIButton)
 }
