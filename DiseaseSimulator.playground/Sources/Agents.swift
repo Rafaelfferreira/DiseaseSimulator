@@ -1,17 +1,29 @@
 import Foundation
 import UIKit
 
-public class Agents: UIButton {
+public class Agent: UIButton {
     var position: (Int,Int)
     var neighbours: [(line: Int,column: Int)]
     var boardSize: (nLines: Int, nColumns: Int)
     
     public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int)) {
+        self.infected = false
         self.position = position
         self.boardSize = boardSize
         self.neighbours = []
         super.init(frame: frame)
         self.neighbours = self.findNeighbours(position: position)
+    }
+    
+    var infected: Bool {
+        didSet { //observer that runs this code everytime the value of alive changes
+            if infected == true {
+                self.backgroundColor = Environment.infectedColor
+            }
+            else {
+                self.backgroundColor = Environment.healthyColor
+            }
+        }
     }
     
     // default required initializer
@@ -34,4 +46,9 @@ public class Agents: UIButton {
         }
         return validNeighbours
     }
+}
+
+//delegates the managing of a button to another class
+protocol ButtonDelegate: class {
+    func buttonDidPress(_ button: UIButton)
 }
