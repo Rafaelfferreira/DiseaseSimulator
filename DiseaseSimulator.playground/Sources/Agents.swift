@@ -21,7 +21,7 @@ public class Agent: UIButton {
                 self.backgroundColor = Environment.infectedColor
             }
             else {
-                self.backgroundColor = Environment.healthyColor
+                self.backgroundColor = Environment.neutralColor
             }
         }
     }

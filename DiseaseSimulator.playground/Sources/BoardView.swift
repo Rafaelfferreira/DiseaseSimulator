@@ -19,9 +19,10 @@ public class BoardView: UIView {
                 let button = Agent(frame: CGRect(x: (buttonSize.width * CGFloat(column)), y: (CGFloat(3 + line) * buttonSize.height), width: buttonSize.width, height: buttonSize.height), position: (line,column), boardSize: (Environment.nLines, Environment.nColumns))
                 
                 button.position = (line, column)
-                button.backgroundColor = .green
-                button.layer.borderWidth = 1
-                button.layer.borderColor = UIColor.red.cgColor
+                button.backgroundColor = Environment.neutralColor
+                button.layer.borderWidth = 0.5
+                button.layer.borderColor = UIColor.white.cgColor
+                button.layer.cornerRadius = 2
                 button.addTarget(self, action: #selector(agentClickedNotification), for: .touchUpInside) //allows the user to change the button state
                 
                 columnButtons.append(button)

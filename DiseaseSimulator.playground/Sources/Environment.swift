@@ -11,8 +11,8 @@ enum Environment {
     static let nColumns: Int = 46
     
     //constants about colors
-    static let healthyColor: UIColor = UIColor(red: 0.960, green: 0.678, blue: 0.403, alpha: 1)
-    static let infectedColor: UIColor = UIColor(red: 0.890, green: 0.890, blue: 0.890, alpha: 1)
+    static let neutralColor: UIColor = UIColor(red: 0.890, green: 0.890, blue: 0.890, alpha: 0.6)
+    static let infectedColor: UIColor = UIColor(red: 0.172, green: 0.568, blue: 0.203, alpha: 1)
     
     
     // reapropriated from last year
