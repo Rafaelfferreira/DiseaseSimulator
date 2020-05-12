@@ -20,7 +20,7 @@ public class BoardView: UIView {
             for column in 1...(Environment.nColumns) {
                 let button = Agent(frame: CGRect(x: (agentSize.width * CGFloat(column)), y: (CGFloat(3 + line) * agentSize.height), width: agentSize.width, height: agentSize.height), position: (line,column), boardSize: (Environment.nLines, Environment.nColumns))
                 
-                button.position = (line, column)
+                button.position = (line-1, column-1)
                 button.backgroundColor = Environment.neutralColor
                 button.layer.borderWidth = 0.5
                 button.layer.borderColor = UIColor.white.cgColor
@@ -33,7 +33,7 @@ public class BoardView: UIView {
             board.append(columnButtons)
         }
         
-        createDefaultButton(buttonLabel: "Teste", posX: 1, posY: 1)
+        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 1)
         
         return board
     }

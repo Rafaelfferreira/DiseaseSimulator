@@ -23,3 +23,10 @@ enum Environment {
     static let friendColor: UIColor = UIColor(red: 0.537, green: 0.831, blue: 0.898, alpha: 1)
     static let popUpColor: UIColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.95)
 }
+
+enum agentStatus {
+    case infected
+    case healthy
+    case dead
+    case inactive
+}

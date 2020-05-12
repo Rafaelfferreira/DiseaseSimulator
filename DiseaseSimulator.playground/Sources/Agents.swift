@@ -6,8 +6,22 @@ public class Agent: UIButton {
     var neighbours: [(line: Int,column: Int)]
     var boardSize: (nLines: Int, nColumns: Int)
     
+    var status: agentStatus {
+        didSet { //observer that runs this code everytime the value of alive changes
+            if status == .inactive {
+                self.backgroundColor = Environment.neutralColor
+            }
+            else if status == .infected {
+                self.backgroundColor = Environment.infectedColor
+            }
+            else if status == .healthy{
+                self.backgroundColor = Environment.healthyColor
+            }
+        }
+    }
+    
     public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int)) {
-        self.infected = false
+        self.status = .inactive
         self.position = position
         self.boardSize = boardSize
         self.neighbours = []
@@ -15,16 +29,7 @@ public class Agent: UIButton {
         self.neighbours = self.findNeighbours(position: position)
     }
     
-    var infected: Bool {
-        didSet { //observer that runs this code everytime the value of alive changes
-            if infected == true {
-                self.backgroundColor = Environment.infectedColor
-            }
-            else {
-                self.backgroundColor = Environment.healthyColor
-            }
-        }
-    }
+    
     
     // default required initializer
     required init?(coder: NSCoder) {

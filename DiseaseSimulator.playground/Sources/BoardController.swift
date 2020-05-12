@@ -6,6 +6,10 @@ import UIKit
 public class BoardController: agentDelegate, buttonDelegate {
     
     var board: [[Agent]]
+    public var isRunning: Bool = false
+    public var speed: Double = 1 //speed of the game evolution
+    var kill: [(line: Int, column: Int)] = [] //an array that store the coordinates of all the alive cells that should die
+    var update: [(Int,Int,agentStatus)] = [] //an array that store the coordinates of all the dead cells that sould live
     
     public init(boardView: BoardView) {
         self.board = boardView.initBoard() //Mudar isso aqui para o metodo que inicializa os quadradinhos
@@ -14,11 +18,91 @@ public class BoardController: agentDelegate, buttonDelegate {
     }
     
     func agentClicked(_ button: Agent) {
-        button.infected = !button.infected
+        if button.status == .inactive {
+            button.status = .healthy
+        }
+        else if button.status == .infected {
+            button.status = .healthy
+        }
+        else if button.status == .healthy{
+            button.status = .infected
+        }
     }
     
     func buttonDidPress(_ button: UIButton) {
-        print("registrou click no botao")
+        guard let kind = button.currentTitle else { return }
+        
+        // Tratando qual botao foi clickado
+        switch (kind) {
+        case "Start":
+            isRunning = !isRunning
+            start()
+        default:
+            print("invalid button pressed")
+        }
+    }
+    
+    //Starts the auto running on the program
+    public func start() {
+        if isRunning {
+            step()
+            DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
+                self.start()
+            }
+        }
+    }
+    
+    //simulates one step on the board
+    public func step() {
+        //scans the board and find which cells would change
+        //the indexes inside the for represent their index in the array, the other part (line or column) is the object in that position
+        for (lineIndex, line) in board.enumerated() { //goes through each line
+            for (columnIndex, column) in line.enumerated() { //goes through each column, column is the Agent in case
+                if column.status == .infected || column.status == .healthy { //randomly moves the squares
+                    moveRandomly(agent: column)
+                }
+            }
+        }
+        
+        updateBoard()
+    }
+    
+    //funcao que calcula os movimentos aleatorios dos agentes, apaga os agentes mortos na hora e salva as novas posicoes para serem atualizadas no array "update"
+    func moveRandomly(agent: Agent) {
+        let currentStatus = agent.status
+        let direction = Int.random(in: 0 ... 3)
+        
+        
+        switch (direction) {
+        case 0: //Up
+            board[agent.position.0][agent.position.1].status = .inactive
+//            board[agent.position.0 - 1][agent.position.1].status = currentStatus
+            self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus))
+        case 1: //Right
+            board[agent.position.0][agent.position.1].status = .inactive
+//            board[agent.position.0][agent.position.1 + 1].status = currentStatus
+            self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus))
+        case 2: //Down
+            board[agent.position.0][agent.position.1].status = .inactive
+//            board[agent.position.0 + 1][agent.position.1].status = currentStatus
+            self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus))
+        case 3: //Left
+            board[agent.position.0][agent.position.1].status = .inactive
+//            board[agent.position.0][agent.position.1 - 1].status = currentStatus
+            self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus))
+        default:
+            return
+        }
+    }
+    
+    //atualiza o tabuleiro com os dados dentro do array update
+    func updateBoard() {
+        print("UPDATEANDO")
+        for agent in update {
+            board[agent.0][agent.1].status = agent.2
+        }
+        
+        update = []
     }
 }
 
