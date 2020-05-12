@@ -29,4 +29,5 @@ enum agentStatus {
     case healthy
     case dead
     case inactive
+    case willBeOccupied
 }

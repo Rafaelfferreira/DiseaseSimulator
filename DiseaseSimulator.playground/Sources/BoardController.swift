@@ -75,21 +75,29 @@ public class BoardController: agentDelegate, buttonDelegate {
         
         switch (direction) {
         case 0: //Up
-            board[agent.position.0][agent.position.1].status = .inactive
-//            board[agent.position.0 - 1][agent.position.1].status = currentStatus
-            self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus))
+            if (agent.position.0 > 0) && (board[agent.position.0 - 1][agent.position.1].status == .inactive){
+                board[agent.position.0][agent.position.1].status = .inactive
+                board[agent.position.0 - 1][agent.position.1].status = .willBeOccupied
+                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus))
+            }
         case 1: //Right
-            board[agent.position.0][agent.position.1].status = .inactive
-//            board[agent.position.0][agent.position.1 + 1].status = currentStatus
-            self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus))
+            if (agent.position.1 < 45) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
+                board[agent.position.0][agent.position.1].status = .inactive
+                board[agent.position.0][agent.position.1 + 1].status = .willBeOccupied
+                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus))
+            }
         case 2: //Down
-            board[agent.position.0][agent.position.1].status = .inactive
-//            board[agent.position.0 + 1][agent.position.1].status = currentStatus
-            self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus))
+            if (agent.position.0 < 45) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
+                board[agent.position.0][agent.position.1].status = .inactive
+                board[agent.position.0 + 1][agent.position.1].status = .willBeOccupied
+                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus))
+            }
         case 3: //Left
-            board[agent.position.0][agent.position.1].status = .inactive
-//            board[agent.position.0][agent.position.1 - 1].status = currentStatus
-            self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus))
+            if (agent.position.1 > 0) && (board[agent.position.0][agent.position.1 - 1].status == .inactive){
+                board[agent.position.0][agent.position.1].status = .inactive
+                board[agent.position.0][agent.position.1 - 1].status = .willBeOccupied
+                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus))
+            }
         default:
             return
         }
