@@ -5,6 +5,15 @@ public class Agent: UIButton {
     var position: (Int,Int)
     var neighbours: [(line: Int,column: Int)]
     var boardSize: (nLines: Int, nColumns: Int)
+    var recoveryTime: Int
+    
+    var timeUntilRecovery: Int { //starts with one but have to be initialized whenever an agent gets sick
+        didSet {
+            if timeUntilRecovery == 0 && self.status == .infected{
+                self.status = .recovered
+            }
+        }
+    }
     
     var status: agentStatus {
         didSet { //observer that runs this code everytime the value of alive changes
@@ -17,14 +26,19 @@ public class Agent: UIButton {
             else if status == .healthy{
                 self.backgroundColor = Environment.healthyColor
             }
+            else if status == .recovered {
+                self.backgroundColor = Environment.recoveredColor
+            }
         }
     }
     
-    public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int)) {
+    public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int), recoveryTime: Int) {
         self.status = .inactive
         self.position = position
         self.boardSize = boardSize
         self.neighbours = []
+        self.recoveryTime = recoveryTime
+        self.timeUntilRecovery = recoveryTime
         super.init(frame: frame)
         self.neighbours = self.findNeighbours(position: position)
     }

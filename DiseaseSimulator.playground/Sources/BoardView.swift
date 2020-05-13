@@ -9,7 +9,8 @@ public class BoardView: UIView {
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
     let buttonSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionButton, height: Int(Environment.screenHeight)/Environment.proportionButton)
     
-    func initBoard() -> [[Agent]] {
+    
+    func initBoard(agentsRecoveryTime: Int) -> [[Agent]] {
         var board: [[Agent]] = []
         
         //initializing the current line of agents
@@ -18,7 +19,7 @@ public class BoardView: UIView {
             
             //initializing the current row of agents
             for column in 1...(Environment.nColumns) {
-                let button = Agent(frame: CGRect(x: (agentSize.width * CGFloat(column)), y: (CGFloat(3 + line) * agentSize.height), width: agentSize.width, height: agentSize.height), position: (line,column), boardSize: (Environment.nLines, Environment.nColumns))
+                let button = Agent(frame: CGRect(x: (agentSize.width * CGFloat(column)), y: (CGFloat(3 + line) * agentSize.height), width: agentSize.width, height: agentSize.height), position: (line,column), boardSize: (Environment.nLines, Environment.nColumns), recoveryTime: agentsRecoveryTime)
                 
                 button.position = (line-1, column-1)
                 button.backgroundColor = Environment.neutralColor

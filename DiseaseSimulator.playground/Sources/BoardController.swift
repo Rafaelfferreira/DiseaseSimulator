@@ -9,13 +9,14 @@ public class BoardController: agentDelegate, buttonDelegate {
     var board: [[Agent]]
     public var isRunning: Bool = false
     public var speed: Double = 1 //speed of the game evolution
-    var update: [(Int,Int,agentStatus)] = [] //an array that store the coordinates of all the dead cells that sould live
+    var update: [(Int,Int,agentStatus,Int)] = [] //an array that store the coordinates of all the dead cells that sould live
     
-    // specific variables regarding the parametr of the simulation
-    var transmissionRate: Int = 70
+    // specific variables regarding the parameters of the simulation
+    var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
+    var recoveryTime: Int = 10 //how many periods does an agent remains sick
     
     public init(boardView: BoardView) {
-        self.board = boardView.initBoard() //Mudar isso aqui para o metodo que inicializa os quadradinhos
+        self.board = boardView.initBoard(agentsRecoveryTime: recoveryTime) //Mudar isso aqui para o metodo que inicializa os quadradinhos
         boardView.agentDelegate = self
         boardView.defaultButtonDelegate = self
     }
@@ -29,6 +30,7 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         else if button.status == .healthy{
             button.status = .infected
+            button.timeUntilRecovery = recoveryTime
         }
     }
     
@@ -61,9 +63,11 @@ public class BoardController: agentDelegate, buttonDelegate {
         //the indexes inside the for represent their index in the array, the other part (line or column) is the object in that position
         for (lineIndex, line) in board.enumerated() { //goes through each line
             for (columnIndex, column) in line.enumerated() { //goes through each column, column is the Agent in case
-                if column.status == .infected || column.status == .healthy { //randomly moves the squares
+                if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
                     if column.status == .healthy {
                         checkSickNeighbours(agent: column)
+                    } else if column.timeUntilRecovery > 0 {
+                        column.timeUntilRecovery -= 1
                     }
                     moveRandomly(agent: column)
                 }
@@ -84,25 +88,25 @@ public class BoardController: agentDelegate, buttonDelegate {
             if (agent.position.0 > 0) && (board[agent.position.0 - 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 - 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus))
+                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery))
             }
         case 1: //Right
             if (agent.position.1 < 45) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 + 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus))
+                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery))
             }
         case 2: //Down
             if (agent.position.0 < 45) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 + 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus))
+                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery))
             }
         case 3: //Left
             if (agent.position.1 > 0) && (board[agent.position.0][agent.position.1 - 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 - 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus))
+                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus, agent.timeUntilRecovery))
             }
         default:
             return
@@ -113,6 +117,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     func updateBoard() {
         for agent in update {
             board[agent.0][agent.1].status = agent.2
+            board[agent.0][agent.1].timeUntilRecovery = agent.3
         }
         
         update = []
@@ -126,6 +131,7 @@ public class BoardController: agentDelegate, buttonDelegate {
                     let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
                     if healthyRoll <= transmissionRate {
                         agent.status = .infected
+                        agent.timeUntilRecovery = recoveryTime
                         gotInfected = true
                     }
                 }
