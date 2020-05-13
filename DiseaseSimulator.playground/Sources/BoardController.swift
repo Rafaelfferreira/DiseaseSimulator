@@ -5,11 +5,13 @@ import UIKit
 
 public class BoardController: agentDelegate, buttonDelegate {
     
+    // variables concerning the functioning of the simulation
     var board: [[Agent]]
     public var isRunning: Bool = false
     public var speed: Double = 1 //speed of the game evolution
-    var kill: [(line: Int, column: Int)] = [] //an array that store the coordinates of all the alive cells that should die
     var update: [(Int,Int,agentStatus)] = [] //an array that store the coordinates of all the dead cells that sould live
+    
+    // specific variables regarding the parametr of the simulation
     
     public init(boardView: BoardView) {
         self.board = boardView.initBoard() //Mudar isso aqui para o metodo que inicializa os quadradinhos
@@ -59,6 +61,11 @@ public class BoardController: agentDelegate, buttonDelegate {
         for (lineIndex, line) in board.enumerated() { //goes through each line
             for (columnIndex, column) in line.enumerated() { //goes through each column, column is the Agent in case
                 if column.status == .infected || column.status == .healthy { //randomly moves the squares
+                    if column.status == .healthy {
+                        checkSickNeighbours(agent: column)
+                    }
+                    
+                    
                     moveRandomly(agent: column)
                 }
             }
@@ -105,12 +112,21 @@ public class BoardController: agentDelegate, buttonDelegate {
     
     //atualiza o tabuleiro com os dados dentro do array update
     func updateBoard() {
-        print("UPDATEANDO")
         for agent in update {
             board[agent.0][agent.1].status = agent.2
         }
         
         update = []
+    }
+    
+    public func checkSickNeighbours(agent: Agent){ //check among the neighbours of the cell if one of them is sick
+        var gotIngected: Bool = false //if the current agent already got infected we can stop the checking neighbour process
+        for neighbour in agent.neighbours {
+            if board[neighbour.line][neighbour.column].status == .infected {
+                //FIX ME: fazer com que o contagio nao seja imediato
+                agent.status = .infected
+            }
+        }
     }
 }
 
