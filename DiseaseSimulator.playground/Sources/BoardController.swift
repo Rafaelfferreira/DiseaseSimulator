@@ -12,6 +12,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     var update: [(Int,Int,agentStatus)] = [] //an array that store the coordinates of all the dead cells that sould live
     
     // specific variables regarding the parametr of the simulation
+    var transmissionRate: Int = 70
     
     public init(boardView: BoardView) {
         self.board = boardView.initBoard() //Mudar isso aqui para o metodo que inicializa os quadradinhos
@@ -64,8 +65,6 @@ public class BoardController: agentDelegate, buttonDelegate {
                     if column.status == .healthy {
                         checkSickNeighbours(agent: column)
                     }
-                    
-                    
                     moveRandomly(agent: column)
                 }
             }
@@ -120,11 +119,16 @@ public class BoardController: agentDelegate, buttonDelegate {
     }
     
     public func checkSickNeighbours(agent: Agent){ //check among the neighbours of the cell if one of them is sick
-        var gotIngected: Bool = false //if the current agent already got infected we can stop the checking neighbour process
+        var gotInfected: Bool = false //if the current agent already got infected we can stop the checking neighbour process
         for neighbour in agent.neighbours {
-            if board[neighbour.line][neighbour.column].status == .infected {
-                //FIX ME: fazer com que o contagio nao seja imediato
-                agent.status = .infected
+            if gotInfected == false { //doesnt check the other neighbors status if the agent already got infected
+                if board[neighbour.line][neighbour.column].status == .infected {
+                    let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
+                    if healthyRoll <= transmissionRate {
+                        agent.status = .infected
+                        gotInfected = true
+                    }
+                }
             }
         }
     }
