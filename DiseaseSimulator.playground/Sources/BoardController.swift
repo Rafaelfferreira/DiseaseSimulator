@@ -8,15 +8,16 @@ public class BoardController: agentDelegate, buttonDelegate {
     // variables concerning the functioning of the simulation
     var board: [[Agent]]
     public var isRunning: Bool = false
-    public var speed: Double = 1 //speed of the game evolution
+    public var speed: Double = 10 //speed of the game evolution
     var update: [(Int,Int,agentStatus,Int)] = [] //an array that store the coordinates of all the dead cells that sould live
     
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
     var recoveryTime: Int = 10 //how many periods does an agent remains sick
+    var mortalityRate: Int = 50 //what are the chances that an infected person wil die
     
     public init(boardView: BoardView) {
-        self.board = boardView.initBoard(agentsRecoveryTime: recoveryTime) //Mudar isso aqui para o metodo que inicializa os quadradinhos
+        self.board = boardView.initBoard(agentsRecoveryTime: recoveryTime, agentsMortalityRate: mortalityRate) //Mudar isso aqui para o metodo que inicializa os quadradinhos
         boardView.agentDelegate = self
         boardView.defaultButtonDelegate = self
     }
@@ -66,7 +67,8 @@ public class BoardController: agentDelegate, buttonDelegate {
                 if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
                     if column.status == .healthy {
                         checkSickNeighbours(agent: column)
-                    } else if column.timeUntilRecovery > 0 {
+                    } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
+                        survivalCheck(agent: column)
                         column.timeUntilRecovery -= 1
                     }
                     moveRandomly(agent: column)
@@ -75,6 +77,18 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         
         updateBoard()
+    }
+    
+    // checks if the current agent will survive the disease for  another period
+    func survivalCheck(agent: Agent) {
+        let activeDangerPeriod = (recoveryTime / 3) * 2
+        if agent.timeUntilRecovery < activeDangerPeriod {
+            let survivalRoll = Int.random(in: 1...(100 * activeDangerPeriod)) //if the roll is less than the mortalityRate the agent DIES
+            if survivalRoll <= agent.chanceOfDying {
+                agent.status = .dead
+                agent.timeUntilRecovery = recoveryTime
+            }
+        }
     }
     
     //funcao que calcula os movimentos aleatorios dos agentes, apaga os agentes mortos na hora e salva as novas posicoes para serem atualizadas no array "update"

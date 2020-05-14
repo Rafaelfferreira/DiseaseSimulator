@@ -6,6 +6,7 @@ public class Agent: UIButton {
     var neighbours: [(line: Int,column: Int)]
     var boardSize: (nLines: Int, nColumns: Int)
     var recoveryTime: Int
+    var chanceOfDying: Int
     
     var timeUntilRecovery: Int { //starts with one but have to be initialized whenever an agent gets sick
         didSet {
@@ -17,27 +18,33 @@ public class Agent: UIButton {
     
     var status: agentStatus {
         didSet { //observer that runs this code everytime the value of alive changes
-            if status == .inactive {
+            //print(status)
+            switch status {
+            case .inactive:
                 self.backgroundColor = Environment.neutralColor
-            }
-            else if status == .infected {
+            case .infected:
                 self.backgroundColor = Environment.infectedColor
-            }
-            else if status == .healthy{
+            case .healthy:
                 self.backgroundColor = Environment.healthyColor
-            }
-            else if status == .recovered {
+            case .recovered:
                 self.backgroundColor = Environment.recoveredColor
+            case .willBeOccupied:
+                return
+            case .dead:
+                self.backgroundColor = Environment.deadColor
+            default:
+                self.backgroundColor = UIColor.red
             }
         }
     }
     
-    public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int), recoveryTime: Int) {
+    public init(frame: CGRect, position: (Int,Int), boardSize: (Int, Int), recoveryTime: Int, chanceOfDying: Int) {
         self.status = .inactive
         self.position = position
         self.boardSize = boardSize
         self.neighbours = []
         self.recoveryTime = recoveryTime
+        self.chanceOfDying = chanceOfDying
         self.timeUntilRecovery = recoveryTime
         super.init(frame: frame)
         self.neighbours = self.findNeighbours(position: position)
