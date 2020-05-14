@@ -14,7 +14,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
     var recoveryTime: Int = 30 //how many periods does an agent remains sick
-    var mortalityRate: Int = 50 //what are the chances that an infected person wil die
+    var mortalityRate: Int = 30 //what are the chances that an infected person wil die
     var canReinfect: Bool = false
     
     public init(boardView: BoardView) {
@@ -44,6 +44,16 @@ public class BoardController: agentDelegate, buttonDelegate {
         case "Start":
             isRunning = !isRunning
             start()
+        case "Clear":
+            clearBoard()
+        case "-":
+            if speed > 10 {
+                speed -= 5
+            }
+        case "+":
+            if speed < 50 {
+                speed += 5
+            }
         default:
             print("invalid button pressed")
         }
@@ -80,6 +90,22 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         
         updateBoard()
+    }
+    
+    public func checkSickNeighbours(agent: Agent){ //check among the neighbours of the cell if one of them is sick
+        var gotInfected: Bool = false //if the current agent already got infected we can stop the checking neighbour process
+        for neighbour in agent.neighbours {
+            if gotInfected == false { //doesnt check the other neighbors status if the agent already got infected
+                if board[neighbour.line][neighbour.column].status == .infected {
+                    let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
+                    if healthyRoll <= transmissionRate {
+                        agent.status = .infected
+                        agent.timeUntilRecovery = recoveryTime
+                        gotInfected = true
+                    }
+                }
+            }
+        }
     }
     
     //funcao que calcula os movimentos aleatorios dos agentes, apaga os agentes mortos na hora e salva as novas posicoes para serem atualizadas no array "update"
@@ -129,20 +155,23 @@ public class BoardController: agentDelegate, buttonDelegate {
         update = []
     }
     
-    public func checkSickNeighbours(agent: Agent){ //check among the neighbours of the cell if one of them is sick
-        var gotInfected: Bool = false //if the current agent already got infected we can stop the checking neighbour process
-        for neighbour in agent.neighbours {
-            if gotInfected == false { //doesnt check the other neighbors status if the agent already got infected
-                if board[neighbour.line][neighbour.column].status == .infected {
-                    let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
-                    if healthyRoll <= transmissionRate {
-                        agent.status = .infected
-                        agent.timeUntilRecovery = recoveryTime
-                        gotInfected = true
-                    }
+    func clearBoard() {
+        var kill: [(line: Int, column: Int)] = [] //an array that store the coordinates of all the alive cells that should die
+        
+        for (lineIndex, line) in self.board.enumerated() { //goes through each line
+            for (columnIndex, column) in line.enumerated() {
+                if column.status != .inactive {
+                    kill.append((line: lineIndex, column: columnIndex))
                 }
             }
         }
+        
+        //changes alive cells to dead when appropriate
+        for agent in kill {
+            board[agent.line][agent.column].status = .inactive
+        }
+        
+        kill = []
     }
 }
 

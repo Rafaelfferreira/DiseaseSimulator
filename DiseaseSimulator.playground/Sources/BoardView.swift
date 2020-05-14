@@ -6,6 +6,10 @@ public class BoardView: UIView {
     weak var agentDelegate: agentDelegate? //delegates the actions to be taken when an agent is clicked on
     weak var defaultButtonDelegate: buttonDelegate?
     
+     //labels that need to be constantly updated
+    var speedValue: Int = 10
+    var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
     let buttonSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionButton, height: Int(Environment.screenHeight)/Environment.proportionButton)
     
@@ -34,7 +38,18 @@ public class BoardView: UIView {
             board.append(columnButtons)
         }
         
-        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 33)
+        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 33.5)
+        createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 35)
+        createRoundButton(buttonLabel: "-", posX: 6, posY: 33.5)
+        createRoundButton(buttonLabel: "+", posX: 9, posY: 33.5)
+        
+        //setting up the stater value of the speedNumber label
+        //speedNumber = UILabel(frame: CGRect(x: 7.5, y: 33.5, width: buttonSize.width*20, height: buttonSize.height))
+        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(7.50), y: (CGFloat(33.6) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        speedNumber.text = "10x"
+        speedNumber.font = UIFont.boldSystemFont(ofSize: 18)
+        speedNumber.textColor = Environment.textColor
+        self.addSubview(speedNumber)
         
         return board
     }
@@ -62,6 +77,23 @@ public class BoardView: UIView {
         self.addSubview(returnButton)
     }
     
+    //function that create the + and - rounded buttons
+    func createRoundButton(buttonLabel: String, posX: Double, posY: Double) {
+        let returnButton = UIButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 1.25 * buttonSize.width, height: buttonSize.height * 1.25))
+        //making it rounder
+        returnButton.backgroundColor = .clear
+        returnButton.layer.cornerRadius = 10
+        returnButton.layer.borderWidth = 1
+        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        //adding the text
+        returnButton.setTitle(buttonLabel, for: .normal)
+        returnButton.backgroundColor = UIColor.white
+        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+        returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
+        self.addSubview(returnButton)
+    }
+    
     // Manda a informacao de qual agente foi clicado atraves do delegate
     @objc func agentClickedNotification(sender: Agent) {
         agentDelegate?.agentClicked(sender)
@@ -69,5 +101,14 @@ public class BoardView: UIView {
     
     @objc func buttonDelegate(sender: UIButton) {
         defaultButtonDelegate?.buttonDidPress(sender)
+        
+        if sender.currentTitle == "-" && speedValue > 10 {
+            speedValue -= 5
+        }
+        else if sender.currentTitle == "+" && speedValue < 50 {
+            speedValue += 5
+        }
+        
+        self.speedNumber.text = "\(speedValue)x"
     }
 }
