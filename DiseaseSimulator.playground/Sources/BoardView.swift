@@ -34,7 +34,7 @@ public class BoardView: UIView {
             board.append(columnButtons)
         }
         
-        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 1)
+        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 33)
         
         return board
     }
@@ -55,7 +55,7 @@ public class BoardView: UIView {
         returnButton.setTitleColor(Environment.textColor, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
-        if buttonLabel == "Play" {
+        if buttonLabel == "Start" {
             returnButton.backgroundColor = Environment.textColor
             returnButton.setTitleColor(UIColor.white, for: .normal)
         }

@@ -9,12 +9,13 @@ public class BoardController: agentDelegate, buttonDelegate {
     var board: [[Agent]]
     public var isRunning: Bool = false
     public var speed: Double = 10 //speed of the game evolution
-    var update: [(Int,Int,agentStatus,Int, Int)] = [] //an array that store the coordinates of all the dead cells that sould live
+    var update: [(Int,Int,agentStatus,Int, Int)] = [] //an array that store the information of the cells that are moving
     
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
-    var recoveryTime: Int = 10 //how many periods does an agent remains sick
+    var recoveryTime: Int = 30 //how many periods does an agent remains sick
     var mortalityRate: Int = 50 //what are the chances that an infected person wil die
+    var canReinfect: Bool = false
     
     public init(boardView: BoardView) {
         self.board = boardView.initBoard(agentsRecoveryTime: recoveryTime, agentsMortalityRate: mortalityRate) //Mudar isso aqui para o metodo que inicializa os quadradinhos
@@ -65,7 +66,7 @@ public class BoardController: agentDelegate, buttonDelegate {
         for (lineIndex, line) in board.enumerated() { //goes through each line
             for (columnIndex, column) in line.enumerated() { //goes through each column, column is the Agent in case
                 if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
-                    if column.status == .healthy {
+                    if column.status == .healthy || (canReinfect && column.status == .recovered ){
                         checkSickNeighbours(agent: column)
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
                         column.timeUntilRecovery -= 1

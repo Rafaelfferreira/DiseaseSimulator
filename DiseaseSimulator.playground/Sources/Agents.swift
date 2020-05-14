@@ -29,14 +29,11 @@ public class Agent: UIButton {
             case .healthy:
                 self.backgroundColor = Environment.healthyColor
             case .recovered:
-                print(self.periodOfDying)
                 self.backgroundColor = Environment.recoveredColor
             case .willBeOccupied:
                 return
             case .dead:
                 self.backgroundColor = Environment.deadColor
-            default:
-                self.backgroundColor = UIColor.red
             }
         }
     }
