@@ -7,6 +7,7 @@ public class Agent: UIButton {
     var boardSize: (nLines: Int, nColumns: Int)
     var recoveryTime: Int
     var chanceOfDying: Int
+    var periodOfDying: Int //represents in which period (in the countdown of recovery time) will the agent die (if he's going to)
     
     var timeUntilRecovery: Int { //starts with one but have to be initialized whenever an agent gets sick
         didSet {
@@ -24,9 +25,11 @@ public class Agent: UIButton {
                 self.backgroundColor = Environment.neutralColor
             case .infected:
                 self.backgroundColor = Environment.infectedColor
+                survivalCheck()
             case .healthy:
                 self.backgroundColor = Environment.healthyColor
             case .recovered:
+                print(self.periodOfDying)
                 self.backgroundColor = Environment.recoveredColor
             case .willBeOccupied:
                 return
@@ -46,6 +49,7 @@ public class Agent: UIButton {
         self.recoveryTime = recoveryTime
         self.chanceOfDying = chanceOfDying
         self.timeUntilRecovery = recoveryTime
+        self.periodOfDying = recoveryTime + 1 //starts in a number that will never be achieved, since timeUntilRecovery only goes down
         super.init(frame: frame)
         self.neighbours = self.findNeighbours(position: position)
     }
@@ -55,6 +59,16 @@ public class Agent: UIButton {
     // default required initializer
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // checks if the current agent will survive the disease for  another period
+    func survivalCheck() {
+        let survivalRoll = Int.random(in: 1...100) //if the roll is less than the mortalityRate the agent DIES
+        if survivalRoll <= chanceOfDying {
+            var randomPeriod = Int.random(in: 1...((recoveryTime/3)*2))
+            //print(randomPeriod)
+            self.periodOfDying = randomPeriod
+        }
     }
     
     public func findNeighbours(position: (line: Int,row: Int)) -> [(Int,Int)] {

@@ -9,7 +9,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     var board: [[Agent]]
     public var isRunning: Bool = false
     public var speed: Double = 10 //speed of the game evolution
-    var update: [(Int,Int,agentStatus,Int)] = [] //an array that store the coordinates of all the dead cells that sould live
+    var update: [(Int,Int,agentStatus,Int, Int)] = [] //an array that store the coordinates of all the dead cells that sould live
     
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
@@ -68,8 +68,10 @@ public class BoardController: agentDelegate, buttonDelegate {
                     if column.status == .healthy {
                         checkSickNeighbours(agent: column)
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
-                        survivalCheck(agent: column)
                         column.timeUntilRecovery -= 1
+                        if column.timeUntilRecovery == column.periodOfDying {
+                            column.status = .dead
+                        }
                     }
                     moveRandomly(agent: column)
                 }
@@ -77,18 +79,6 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         
         updateBoard()
-    }
-    
-    // checks if the current agent will survive the disease for  another period
-    func survivalCheck(agent: Agent) {
-        let activeDangerPeriod = (recoveryTime / 3) * 2
-        if agent.timeUntilRecovery < activeDangerPeriod {
-            let survivalRoll = Int.random(in: 1...(100 * activeDangerPeriod)) //if the roll is less than the mortalityRate the agent DIES
-            if survivalRoll <= agent.chanceOfDying {
-                agent.status = .dead
-                agent.timeUntilRecovery = recoveryTime
-            }
-        }
     }
     
     //funcao que calcula os movimentos aleatorios dos agentes, apaga os agentes mortos na hora e salva as novas posicoes para serem atualizadas no array "update"
@@ -102,25 +92,25 @@ public class BoardController: agentDelegate, buttonDelegate {
             if (agent.position.0 > 0) && (board[agent.position.0 - 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 - 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery))
+                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         case 1: //Right
             if (agent.position.1 < 45) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 + 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery))
+                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         case 2: //Down
             if (agent.position.0 < 45) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 + 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery))
+                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         case 3: //Left
             if (agent.position.1 > 0) && (board[agent.position.0][agent.position.1 - 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 - 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus, agent.timeUntilRecovery))
+                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         default:
             return
@@ -132,6 +122,7 @@ public class BoardController: agentDelegate, buttonDelegate {
         for agent in update {
             board[agent.0][agent.1].status = agent.2
             board[agent.0][agent.1].timeUntilRecovery = agent.3
+            board[agent.0][agent.1].periodOfDying = agent.4
         }
         
         update = []
