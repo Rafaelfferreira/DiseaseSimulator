@@ -47,17 +47,9 @@ public class BoardView: UIView {
         //LEFT SIDE UI - SIMULATION CONTROL
         createDefaultButton(buttonLabel: "Start", posX: 1, posY: 31.9)
         createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 33.4)
+        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
         createRoundButton(buttonLabel: "-", buttonID: "reduceSpeed", posX: 1, posY: 35.75)
         createRoundButton(buttonLabel: "+", buttonID: "increaseSpeed", posX: 4.2, posY: 35.75)
-//        createRoundButton(buttonLabel: "-", posX: 6.5, posY: 34.6) - OLD POSITION
-//        createRoundButton(buttonLabel: "+", posX: 9.5, posY: 34.6) - OLD POSITION
-        
-        //Setting the UI Labels
-//        setStaticLabel(labelText: "Speed", posX: 7.45, posY: 33.5) - OLD POSITION
-        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
-        
-        //setting up the stater value of the speedNumber label
-        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
         speedNumber = setDynamicLabel(labelText: "1x", posX: 2.7, posY: 35.85, size: 16)
         self.addSubview(speedNumber)
         
@@ -71,8 +63,6 @@ public class BoardView: UIView {
         setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
         createReinfectionButton(posX: 15, posY: 36)
         
-        
-        
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
         setStaticLabel(labelText: "Status:", posX: 23.8, posY: 31.7, size: 15)
@@ -81,16 +71,6 @@ public class BoardView: UIView {
         setStaticLabel(labelText: "Infected: 1000", posX: 23, posY: 33.8)
         setStaticLabel(labelText: "Recovered: 1000", posX: 23, posY: 34.8)
         setStaticLabel(labelText: "Deceased: 1000", posX: 23, posY: 35.8)
-        
-        //Simulation Speed Label - MULTILINE - OLD POSITION
-//        var simulationSpeed = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(6.19), y: (CGFloat(33) * buttonSize.height), width: buttonSize.width*5, height: buttonSize.height*2))
-//        simulationSpeed.text = "Simulation\nspeed"
-//        simulationSpeed.font = UIFont.boldSystemFont(ofSize: 11)
-//        simulationSpeed.textColor = Environment.textColor
-//        simulationSpeed.numberOfLines = 2
-//        simulationSpeed.textAlignment = .center
-//        self.addSubview(simulationSpeed)
-        
         
         return board
     }
@@ -111,13 +91,11 @@ public class BoardView: UIView {
         return dynamicLabel
     }
     
-    func setStaticLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) {
+    func setStaticLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11, color: UIColor = Environment.textColor) {
         let staticLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         staticLabel.text = labelText
         staticLabel.font = UIFont.boldSystemFont(ofSize: size)
-        staticLabel.textColor = Environment.textColor
-//        staticLabel.numberOfLines = 2
-//        staticLabel.textAlignment = .center
+        staticLabel.textColor = color
         self.addSubview(staticLabel)
     }
     

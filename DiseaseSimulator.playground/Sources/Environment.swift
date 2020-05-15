@@ -8,7 +8,7 @@ enum Environment {
     //static let proportionButton: Int = 80
     static let proportionGrid: Int = 91
     static let proportionButton: Int = 60
-    static let nLines: Int = 46
+    static let nLines: Int = 45
     static let nColumns: Int = 46
     
     //constants about colors
