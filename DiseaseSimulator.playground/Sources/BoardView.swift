@@ -47,10 +47,10 @@ public class BoardView: UIView {
         //LEFT SIDE UI - SIMULATION CONTROL
         createDefaultButton(buttonLabel: "Start", posX: 1, posY: 31.9)
         createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 33.4)
-        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
-        createRoundButton(buttonLabel: "-", buttonID: "reduceSpeed", posX: 1, posY: 35.75)
-        createRoundButton(buttonLabel: "+", buttonID: "increaseSpeed", posX: 4.2, posY: 35.75)
-        speedNumber = setDynamicLabel(labelText: "1x", posX: 2.7, posY: 35.85, size: 16)
+        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75, color: UIColor.black)
+        createRoundButton(buttonLabel: "-", buttonID: "reduceSpeed", posX: 1, posY: 35.75, color: UIColor.black)
+        createRoundButton(buttonLabel: "+", buttonID: "increaseSpeed", posX: 4.2, posY: 35.75, color: UIColor.black)
+        speedNumber = setDynamicLabel(labelText: "1x", posX: 2.7, posY: 35.85, size: 16, color: UIColor.black)
         self.addSubview(speedNumber)
         
         //MIDDLE UI - SIMULATION PARAMETERS
@@ -61,32 +61,31 @@ public class BoardView: UIView {
         mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", posX: 7, posY: 34.5)
         self.addSubview(mortalityRateLabel)
         setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
-        createReinfectionButton(posX: 15, posY: 36)
+        createReinfectionButton(posX: 15, posY: 36, color: UIColor.black)
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
-        setStaticLabel(labelText: "Status:", posX: 23.8, posY: 31.7, size: 15)
-        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8)
-        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8)
-        setStaticLabel(labelText: "Infected: 1000", posX: 23, posY: 33.8)
-        setStaticLabel(labelText: "Recovered: 1000", posX: 23, posY: 34.8)
-        setStaticLabel(labelText: "Deceased: 1000", posX: 23, posY: 35.8)
+        setStaticLabel(labelText: "Status:", posX: 23.8, posY: 31.7, size: 15, color: UIColor.black)
+        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8, color: Environment.healthyColor)
+        setStaticLabel(labelText: "Infected: 1000", posX: 23, posY: 33.8, color: Environment.infectedColor)
+        setStaticLabel(labelText: "Recovered: 1000", posX: 23, posY: 34.8, color: Environment.recoveredColor)
+        setStaticLabel(labelText: "Deceased: 1000", posX: 23, posY: 35.8, color: Environment.deadColor)
         
         return board
     }
     
     func setParameterControl(parameterName: String, buttonID: String, posX: Double, posY: Double) -> UILabel {
         setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 13)
-        createRoundButton(buttonLabel: "-", buttonID: "reduce\(buttonID)", posX: posX + 7.75, posY: posY - 0.1)
-        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 11.4, posY: posY - 0.1)
-        return setDynamicLabel(labelText: "70%", posX: posX + 9.45, posY: posY, size: 13)
+        createRoundButton(buttonLabel: "-", buttonID: "reduce\(buttonID)", posX: posX + 7.75, posY: posY - 0.1, color: UIColor.black)
+        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 11.4, posY: posY - 0.1, color: UIColor.black)
+        return setDynamicLabel(labelText: "70%", posX: posX + 9.45, posY: posY, size: 13, color: UIColor.black)
     }
     
-    func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) -> UILabel {
+    func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11, color: UIColor = Environment.textColor) -> UILabel {
         let dynamicLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         dynamicLabel.text = labelText
         dynamicLabel.font = UIFont.boldSystemFont(ofSize: size)
-        dynamicLabel.textColor = Environment.textColor
+        dynamicLabel.textColor = color
         
         return dynamicLabel
     }
@@ -101,7 +100,7 @@ public class BoardView: UIView {
     
     //function that creates buttons with the default style of this playground.
     //the X and Y positions are relative to the width and the height of the cells
-    func createDefaultButton(buttonLabel: String, posX: Double, posY: Double){ //-> UIButton{
+    func createDefaultButton(buttonLabel: String, posX: Double, posY: Double, color: UIColor = Environment.textColor){ //-> UIButton{
         let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 4.5 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
@@ -111,7 +110,7 @@ public class BoardView: UIView {
         //adding the text
         returnButton.setTitle(buttonLabel, for: .normal)
         returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.setTitleColor(color, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         if buttonLabel == "Start" {
@@ -122,34 +121,34 @@ public class BoardView: UIView {
     }
     
     //function that create the + and - rounded buttons
-    func createRoundButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double) {
+    func createRoundButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double, color: UIColor = Environment.textColor) {
         let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 1.25 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 10
         returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        returnButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
         //adding the text
         returnButton.setTitle(buttonLabel, for: .normal)
         returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.setTitleColor(color, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         returnButton.id = buttonID
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(returnButton)
     }
     
-    func createReinfectionButton(posX: Double, posY: Double) {
+    func createReinfectionButton(posX: Double, posY: Double, color: UIColor = Environment.textColor) {
         var returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 5
         returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        returnButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
         //adding the text
         returnButton.setTitle("Yes", for: .normal)
         returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.setTitleColor(color, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(returnButton)
@@ -159,11 +158,11 @@ public class BoardView: UIView {
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 5
         returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        returnButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
         //adding the text
         returnButton.setTitle("No", for: .normal)
         returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.setTitleColor(color, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(returnButton)

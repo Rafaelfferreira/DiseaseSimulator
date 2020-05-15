@@ -122,13 +122,13 @@ public class BoardController: agentDelegate, buttonDelegate {
                 self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         case 1: //Right
-            if (agent.position.1 < 45) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
+            if (agent.position.1 < Environment.nColumns - 1) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 + 1].status = .willBeOccupied
                 self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
             }
         case 2: //Down
-            if (agent.position.0 < 45) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
+            if (agent.position.0 < Environment.nLines - 1) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 + 1][agent.position.1].status = .willBeOccupied
                 self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
