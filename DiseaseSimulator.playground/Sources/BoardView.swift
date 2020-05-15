@@ -11,9 +11,9 @@ public class BoardView: UIView {
     var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) //actual label
     var transmissionValue: Int = 70
     var transmissionLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    var recoveryTimeValue: Int = 70
+    var recoveryTimeValue: Int = 10
     var recoveryTimeLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    var mortalityRateValue: Int = 70
+    var mortalityRateValue: Int = 30
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
@@ -45,8 +45,8 @@ public class BoardView: UIView {
         }
         
         //LEFT SIDE UI - SIMULATION CONTROL
-        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 31.9)
-        createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 33.4)
+        createDefaultButton(buttonLabel: "Start", buttonID: "Start", posX: 1, posY: 31.9)
+        createDefaultButton(buttonLabel: "Clear", buttonID: "Clear", posX: 1, posY: 33.4)
         setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75, color: UIColor.black)
         createRoundButton(buttonLabel: "-", buttonID: "reduceSpeed", posX: 1, posY: 35.75, color: UIColor.black)
         createRoundButton(buttonLabel: "+", buttonID: "increaseSpeed", posX: 4.2, posY: 35.75, color: UIColor.black)
@@ -54,11 +54,11 @@ public class BoardView: UIView {
         self.addSubview(speedNumber)
         
         //MIDDLE UI - SIMULATION PARAMETERS
-        transmissionLabel = setParameterControl(parameterName: "Transmission Rate", buttonID: "Transmission", posX: 7, posY: 31.5)
+        transmissionLabel = setParameterControl(parameterName: "Transmission Rate", buttonID: "Transmission", parameterValue: transmissionValue, posX: 7, posY: 31.5)
         self.addSubview(transmissionLabel)
-        recoveryTimeLabel = setParameterControl(parameterName: "Recovery Time", buttonID: "Recovery", posX: 7, posY: 33)
+        recoveryTimeLabel = setParameterControl(parameterName: "Recovery Time", buttonID: "Recovery", parameterValue: recoveryTimeValue, posX: 7, posY: 33)
         self.addSubview(recoveryTimeLabel)
-        mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", posX: 7, posY: 34.5)
+        mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", parameterValue: mortalityRateValue, posX: 7, posY: 34.5)
         self.addSubview(mortalityRateLabel)
         setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
         createReinfectionButton(posX: 15, posY: 36, color: UIColor.black)
@@ -74,11 +74,11 @@ public class BoardView: UIView {
         return board
     }
     
-    func setParameterControl(parameterName: String, buttonID: String, posX: Double, posY: Double) -> UILabel {
+    func setParameterControl(parameterName: String, buttonID: String, parameterValue: Int , posX: Double, posY: Double) -> UILabel {
         setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 13)
         createRoundButton(buttonLabel: "-", buttonID: "reduce\(buttonID)", posX: posX + 7.75, posY: posY - 0.1, color: UIColor.black)
-        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 11.4, posY: posY - 0.1, color: UIColor.black)
-        return setDynamicLabel(labelText: "70%", posX: posX + 9.45, posY: posY, size: 13, color: UIColor.black)
+        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 12.4, posY: posY - 0.1, color: UIColor.black)
+        return setDynamicLabel(labelText: "\(parameterValue)%", posX: posX + 9.85, posY: posY, size: 13, color: UIColor.black)
     }
     
     func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11, color: UIColor = Environment.textColor) -> UILabel {
@@ -100,7 +100,7 @@ public class BoardView: UIView {
     
     //function that creates buttons with the default style of this playground.
     //the X and Y positions are relative to the width and the height of the cells
-    func createDefaultButton(buttonLabel: String, posX: Double, posY: Double, color: UIColor = Environment.textColor){ //-> UIButton{
+    func createDefaultButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double, color: UIColor = Environment.textColor){ //-> UIButton{
         let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 4.5 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
@@ -112,8 +112,9 @@ public class BoardView: UIView {
         returnButton.backgroundColor = UIColor.white
         returnButton.setTitleColor(color, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
+        returnButton.id = buttonID
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
-        if buttonLabel == "Start" {
+        if buttonID == "Start" {
             returnButton.backgroundColor = Environment.textColor
             returnButton.setTitleColor(UIColor.white, for: .normal)
         }
@@ -178,12 +179,22 @@ public class BoardView: UIView {
         
         if sender.id == "reduceSpeed" && speedValue > 1 {
             speedValue -= 1
-        }
-        else if sender.id == "increaseSpeed" && speedValue < 5 {
+        } else if sender.id == "increaseSpeed" && speedValue < 5 {
             speedValue += 1
+        } else if sender.id == "increaseTransmission" && transmissionValue < 100 {
+            transmissionValue += 10
+            if transmissionValue == 100 { //adjusts the label to the left so to keep the 100% centered
+                self.transmissionLabel.frame.origin.x -= 4
+            }
+        } else if sender.id == "reduceTransmission" && transmissionValue > 0 {
+            if transmissionValue == 100 { //adjusts the label to the right to keep it centered
+                self.transmissionLabel.frame.origin.x += 4
+            }
+            transmissionValue -= 10
         }
         
         self.speedNumber.text = "\(speedValue)x"
+        self.transmissionLabel.text = "\(transmissionValue)%"
     }
 }
 

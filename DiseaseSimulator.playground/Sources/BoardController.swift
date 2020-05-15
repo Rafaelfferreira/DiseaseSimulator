@@ -36,8 +36,8 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
     }
     
-    func buttonDidPress(_ button: UIButton) {
-        guard let kind = button.currentTitle else { return }
+    func buttonDidPress(_ button: MyButton) {
+        guard let kind = button.id else { return }
         
         // Tratando qual botao foi clickado
         switch (kind) {
@@ -46,13 +46,21 @@ public class BoardController: agentDelegate, buttonDelegate {
             start()
         case "Clear":
             clearBoard()
-        case "-":
+        case "reduceSpeed":
             if speed > 1 {
                 speed -= 1
             }
-        case "+":
+        case "increaseSpeed":
             if speed < 5 {
                 speed += 1
+            }
+        case "reduceTransmission":
+            if transmissionRate > 0 {
+                transmissionRate -= 10
+            }
+        case "increaseTransmission":
+            if speed < 100 {
+                transmissionRate += 10
             }
         default:
             print("invalid button pressed")
@@ -65,6 +73,7 @@ public class BoardController: agentDelegate, buttonDelegate {
             step()
             DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
                 self.start()
+                print(self.transmissionRate)
             }
         }
     }
@@ -182,7 +191,7 @@ protocol agentDelegate: class {
 }
 
 protocol buttonDelegate: class {
-    func buttonDidPress(_ button: UIButton)
+    func buttonDidPress(_ button: MyButton)
 }
 
 //function that starts the playground view, this happens in a function to hide the view creation from the user
