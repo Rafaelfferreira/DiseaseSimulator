@@ -7,8 +7,8 @@ public class BoardView: UIView {
     weak var defaultButtonDelegate: buttonDelegate?
     
      //labels that need to be constantly updated
-    var speedValue: Int = 1
-    var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var speedValue: Int = 1  // logical value
+    var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) //actual label
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
     let buttonSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionButton, height: Int(Environment.screenHeight)/Environment.proportionButton)
@@ -38,41 +38,61 @@ public class BoardView: UIView {
             board.append(columnButtons)
         }
         
-        //Setting up the UI Buttons
-        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 33.5)
-        createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 35)
-        createRoundButton(buttonLabel: "-", posX: 6.5, posY: 35.1)
-        createRoundButton(buttonLabel: "+", posX: 9.5, posY: 35.1)
+        //LEFT SIDE UI - SIMULATION CONTROL
+        createDefaultButton(buttonLabel: "Start", posX: 1, posY: 31.9)
+        createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 33.4)
+        createRoundButton(buttonLabel: "-", buttonID: "reduceSpeed", posX: 1, posY: 35.75)
+        createRoundButton(buttonLabel: "+", buttonID: "increaseSpeed", posX: 4.2, posY: 35.75)
+//        createRoundButton(buttonLabel: "-", posX: 6.5, posY: 34.6) - OLD POSITION
+//        createRoundButton(buttonLabel: "+", posX: 9.5, posY: 34.6) - OLD POSITION
         
         //Setting the UI Labels
-        //setStaticLabel(labelText: "Simulation Speed", posX: 4.5, posY: 32)
-        
-        //Simulation Speed Label
-        var simulationSpeed = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(6.19), y: (CGFloat(33) * buttonSize.height), width: buttonSize.width*5, height: buttonSize.height*2))
-        simulationSpeed.text = "Simulation\nspeed"
-        simulationSpeed.font = UIFont.boldSystemFont(ofSize: 11)
-        simulationSpeed.textColor = Environment.textColor
-        simulationSpeed.numberOfLines = 2
-        simulationSpeed.textAlignment = .center
-        self.addSubview(simulationSpeed)
+//        setStaticLabel(labelText: "Speed", posX: 7.45, posY: 33.5) - OLD POSITION
+        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
         
         //setting up the stater value of the speedNumber label
-        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(8), y: (CGFloat(35.2) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(2.7), y: (CGFloat(35.85) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         speedNumber.text = "1x"
-        speedNumber.font = UIFont.boldSystemFont(ofSize: 18)
+        speedNumber.font = UIFont.boldSystemFont(ofSize: 16)
         speedNumber.textColor = Environment.textColor
         self.addSubview(speedNumber)
+        
+        //MIDDLE UI - SIMULATION PARAMETERS
+        
+        
+        //RIGHT SIDE UI - SIMULATION STATUS
+        //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
+        setStaticLabel(labelText: "Status:", posX: 23.8, posY: 31.7, size: 15)
+        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8)
+        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8)
+        setStaticLabel(labelText: "Infected: 1000", posX: 23, posY: 33.8)
+        setStaticLabel(labelText: "Recovered: 1000", posX: 23, posY: 34.8)
+        setStaticLabel(labelText: "Deceased: 1000", posX: 23, posY: 35.8)
+        
+        //Simulation Speed Label - MULTILINE - OLD POSITION
+//        var simulationSpeed = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(6.19), y: (CGFloat(33) * buttonSize.height), width: buttonSize.width*5, height: buttonSize.height*2))
+//        simulationSpeed.text = "Simulation\nspeed"
+//        simulationSpeed.font = UIFont.boldSystemFont(ofSize: 11)
+//        simulationSpeed.textColor = Environment.textColor
+//        simulationSpeed.numberOfLines = 2
+//        simulationSpeed.textAlignment = .center
+//        self.addSubview(simulationSpeed)
+        
+        
         
         
         
         return board
     }
     
+    func setParameterControl() {
+        
+    }
     
-    func setStaticLabel(labelText: String, posX: Double, posY: Double) {
+    func setStaticLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) {
         var staticLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         staticLabel.text = labelText
-        staticLabel.font = UIFont.boldSystemFont(ofSize: 11)
+        staticLabel.font = UIFont.boldSystemFont(ofSize: size)
         staticLabel.textColor = Environment.textColor
 //        staticLabel.numberOfLines = 2
 //        staticLabel.textAlignment = .center
@@ -82,7 +102,7 @@ public class BoardView: UIView {
     //function that creates buttons with the default style of this playground.
     //the X and Y positions are relative to the width and the height of the cells
     func createDefaultButton(buttonLabel: String, posX: Double, posY: Double){ //-> UIButton{
-        let returnButton = UIButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 4.5 * buttonSize.width, height: buttonSize.height * 1.25))
+        let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 4.5 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 5
@@ -102,8 +122,8 @@ public class BoardView: UIView {
     }
     
     //function that create the + and - rounded buttons
-    func createRoundButton(buttonLabel: String, posX: Double, posY: Double) {
-        let returnButton = UIButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 1.25 * buttonSize.width, height: buttonSize.height * 1.25))
+    func createRoundButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double) {
+        let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 1.25 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 10
@@ -114,6 +134,7 @@ public class BoardView: UIView {
         returnButton.backgroundColor = UIColor.white
         returnButton.setTitleColor(Environment.textColor, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
+        returnButton.id = buttonID
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(returnButton)
     }
@@ -123,16 +144,20 @@ public class BoardView: UIView {
         agentDelegate?.agentClicked(sender)
     }
     
-    @objc func buttonDelegate(sender: UIButton) {
+    @objc func buttonDelegate(sender: MyButton) {
         defaultButtonDelegate?.buttonDidPress(sender)
         
-        if sender.currentTitle == "-" && speedValue > 1 {
+        if sender.id == "reduceSpeed" && speedValue > 1 {
             speedValue -= 1
         }
-        else if sender.currentTitle == "+" && speedValue < 5 {
+        else if sender.id == "increaseSpeed" && speedValue < 5 {
             speedValue += 1
         }
         
         self.speedNumber.text = "\(speedValue)x"
     }
+}
+
+class MyButton: UIButton {
+    var id: String?
 }

@@ -169,6 +169,8 @@ public class BoardController: agentDelegate, buttonDelegate {
         //changes alive cells to dead when appropriate
         for agent in kill {
             board[agent.line][agent.column].status = .inactive
+            board[agent.line][agent.column].timeUntilRecovery = recoveryTime
+            board[agent.line][agent.column].periodOfDying = recoveryTime + 1
         }
         
         kill = []
