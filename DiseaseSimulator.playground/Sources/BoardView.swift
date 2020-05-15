@@ -7,7 +7,7 @@ public class BoardView: UIView {
     weak var defaultButtonDelegate: buttonDelegate?
     
      //labels that need to be constantly updated
-    var speedValue: Int = 10
+    var speedValue: Int = 1
     var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
@@ -46,7 +46,7 @@ public class BoardView: UIView {
         //setting up the stater value of the speedNumber label
         //speedNumber = UILabel(frame: CGRect(x: 7.5, y: 33.5, width: buttonSize.width*20, height: buttonSize.height))
         speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(7.50), y: (CGFloat(33.6) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
-        speedNumber.text = "10x"
+        speedNumber.text = "1x"
         speedNumber.font = UIFont.boldSystemFont(ofSize: 18)
         speedNumber.textColor = Environment.textColor
         self.addSubview(speedNumber)
@@ -102,11 +102,11 @@ public class BoardView: UIView {
     @objc func buttonDelegate(sender: UIButton) {
         defaultButtonDelegate?.buttonDidPress(sender)
         
-        if sender.currentTitle == "-" && speedValue > 10 {
-            speedValue -= 5
+        if sender.currentTitle == "-" && speedValue > 1 {
+            speedValue -= 1
         }
-        else if sender.currentTitle == "+" && speedValue < 50 {
-            speedValue += 5
+        else if sender.currentTitle == "+" && speedValue < 5 {
+            speedValue += 1
         }
         
         self.speedNumber.text = "\(speedValue)x"

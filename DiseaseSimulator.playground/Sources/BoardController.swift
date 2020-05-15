@@ -8,7 +8,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     // variables concerning the functioning of the simulation
     var board: [[Agent]]
     public var isRunning: Bool = false
-    public var speed: Double = 10 //speed of the game evolution
+    public var speed: Double = 1 //speed of the game evolution
     var update: [(Int,Int,agentStatus,Int, Int)] = [] //an array that store the information of the cells that are moving
     
     // specific variables regarding the parameters of the simulation
@@ -47,12 +47,12 @@ public class BoardController: agentDelegate, buttonDelegate {
         case "Clear":
             clearBoard()
         case "-":
-            if speed > 10 {
-                speed -= 5
+            if speed > 1 {
+                speed -= 1
             }
         case "+":
-            if speed < 50 {
-                speed += 5
+            if speed < 5 {
+                speed += 1
             }
         default:
             print("invalid button pressed")
@@ -65,6 +65,7 @@ public class BoardController: agentDelegate, buttonDelegate {
             step()
             DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
                 self.start()
+                print(self.speed)
             }
         }
     }
