@@ -9,6 +9,12 @@ public class BoardView: UIView {
      //labels that need to be constantly updated
     var speedValue: Int = 1  // logical value
     var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) //actual label
+    var transmissionValue: Int = 70
+    var transmissionLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var recoveryTimeValue: Int = 70
+    var recoveryTimeLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var mortalityRateValue: Int = 70
+    var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
     let buttonSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionButton, height: Int(Environment.screenHeight)/Environment.proportionButton)
@@ -56,7 +62,16 @@ public class BoardView: UIView {
         self.addSubview(speedNumber)
         
         //MIDDLE UI - SIMULATION PARAMETERS
-        setParameterControl(parameterName: "Transmission Rate", buttonID: "reduceTransmission", posX: 7, posY: 32)
+        transmissionLabel = setParameterControl(parameterName: "Transmission Rate", buttonID: "Transmission", posX: 7, posY: 31.5)
+        self.addSubview(transmissionLabel)
+        recoveryTimeLabel = setParameterControl(parameterName: "Recovery Time", buttonID: "Recovery", posX: 7, posY: 33)
+        self.addSubview(recoveryTimeLabel)
+        mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", posX: 7, posY: 34.5)
+        self.addSubview(mortalityRateLabel)
+        setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
+        createReinfectionButton(posX: 15, posY: 36)
+        
+        
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
@@ -80,10 +95,11 @@ public class BoardView: UIView {
         return board
     }
     
-    func setParameterControl(parameterName: String, buttonID: String, posX: Double, posY: Double) {
-        setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 12)
-        createRoundButton(buttonLabel: "-", buttonID: "reduceTransmission", posX: posX + 7.4, posY: posY - 0.1)
-        createRoundButton(buttonLabel: "+", buttonID: "increaseTransmission", posX: posX + 11.4, posY: posY - 0.1)
+    func setParameterControl(parameterName: String, buttonID: String, posX: Double, posY: Double) -> UILabel {
+        setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 13)
+        createRoundButton(buttonLabel: "-", buttonID: "reduce\(buttonID)", posX: posX + 7.75, posY: posY - 0.1)
+        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 11.4, posY: posY - 0.1)
+        return setDynamicLabel(labelText: "70%", posX: posX + 9.45, posY: posY, size: 13)
     }
     
     func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) -> UILabel {
@@ -141,6 +157,36 @@ public class BoardView: UIView {
         returnButton.setTitleColor(Environment.textColor, for: .normal)
         returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         returnButton.id = buttonID
+        returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
+        self.addSubview(returnButton)
+    }
+    
+    func createReinfectionButton(posX: Double, posY: Double) {
+        var returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
+        //making it rounder
+        returnButton.backgroundColor = .clear
+        returnButton.layer.cornerRadius = 5
+        returnButton.layer.borderWidth = 1
+        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        //adding the text
+        returnButton.setTitle("Yes", for: .normal)
+        returnButton.backgroundColor = UIColor.white
+        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
+        returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
+        self.addSubview(returnButton)
+       
+        returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX + 2.5), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
+        //making it rounder
+        returnButton.backgroundColor = .clear
+        returnButton.layer.cornerRadius = 5
+        returnButton.layer.borderWidth = 1
+        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        //adding the text
+        returnButton.setTitle("No", for: .normal)
+        returnButton.backgroundColor = UIColor.white
+        returnButton.setTitleColor(Environment.textColor, for: .normal)
+        returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
         returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(returnButton)
     }
