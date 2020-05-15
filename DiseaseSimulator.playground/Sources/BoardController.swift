@@ -65,7 +65,6 @@ public class BoardController: agentDelegate, buttonDelegate {
             step()
             DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
                 self.start()
-                print(self.speed)
             }
         }
     }

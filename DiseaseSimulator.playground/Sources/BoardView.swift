@@ -38,22 +38,46 @@ public class BoardView: UIView {
             board.append(columnButtons)
         }
         
+        //Setting up the UI Buttons
         createDefaultButton(buttonLabel: "Start", posX: 1, posY: 33.5)
         createDefaultButton(buttonLabel: "Clear", posX: 1, posY: 35)
-        createRoundButton(buttonLabel: "-", posX: 6, posY: 33.5)
-        createRoundButton(buttonLabel: "+", posX: 9, posY: 33.5)
+        createRoundButton(buttonLabel: "-", posX: 6.5, posY: 35.1)
+        createRoundButton(buttonLabel: "+", posX: 9.5, posY: 35.1)
+        
+        //Setting the UI Labels
+        //setStaticLabel(labelText: "Simulation Speed", posX: 4.5, posY: 32)
+        
+        //Simulation Speed Label
+        var simulationSpeed = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(6.19), y: (CGFloat(33) * buttonSize.height), width: buttonSize.width*5, height: buttonSize.height*2))
+        simulationSpeed.text = "Simulation\nspeed"
+        simulationSpeed.font = UIFont.boldSystemFont(ofSize: 11)
+        simulationSpeed.textColor = Environment.textColor
+        simulationSpeed.numberOfLines = 2
+        simulationSpeed.textAlignment = .center
+        self.addSubview(simulationSpeed)
         
         //setting up the stater value of the speedNumber label
-        //speedNumber = UILabel(frame: CGRect(x: 7.5, y: 33.5, width: buttonSize.width*20, height: buttonSize.height))
-        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(7.50), y: (CGFloat(33.6) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(8), y: (CGFloat(35.2) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         speedNumber.text = "1x"
         speedNumber.font = UIFont.boldSystemFont(ofSize: 18)
         speedNumber.textColor = Environment.textColor
         self.addSubview(speedNumber)
         
+        
+        
         return board
     }
     
+    
+    func setStaticLabel(labelText: String, posX: Double, posY: Double) {
+        var staticLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        staticLabel.text = labelText
+        staticLabel.font = UIFont.boldSystemFont(ofSize: 11)
+        staticLabel.textColor = Environment.textColor
+//        staticLabel.numberOfLines = 2
+//        staticLabel.textAlignment = .center
+        self.addSubview(staticLabel)
+    }
     
     //function that creates buttons with the default style of this playground.
     //the X and Y positions are relative to the width and the height of the cells
