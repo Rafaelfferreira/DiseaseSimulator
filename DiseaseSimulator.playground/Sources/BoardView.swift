@@ -51,14 +51,12 @@ public class BoardView: UIView {
         setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
         
         //setting up the stater value of the speedNumber label
-        speedNumber = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(2.7), y: (CGFloat(35.85) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
-        speedNumber.text = "1x"
-        speedNumber.font = UIFont.boldSystemFont(ofSize: 16)
-        speedNumber.textColor = Environment.textColor
+        setStaticLabel(labelText: "Speed", posX: 2.2, posY: 34.75)
+        speedNumber = setDynamicLabel(labelText: "1x", posX: 2.7, posY: 35.85, size: 16)
         self.addSubview(speedNumber)
         
         //MIDDLE UI - SIMULATION PARAMETERS
-        
+        setParameterControl(parameterName: "Transmission Rate", buttonID: "reduceTransmission", posX: 7, posY: 32)
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
@@ -79,18 +77,26 @@ public class BoardView: UIView {
 //        self.addSubview(simulationSpeed)
         
         
-        
-        
-        
         return board
     }
     
-    func setParameterControl() {
+    func setParameterControl(parameterName: String, buttonID: String, posX: Double, posY: Double) {
+        setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 12)
+        createRoundButton(buttonLabel: "-", buttonID: "reduceTransmission", posX: posX + 7.4, posY: posY - 0.1)
+        createRoundButton(buttonLabel: "+", buttonID: "increaseTransmission", posX: posX + 11.4, posY: posY - 0.1)
+    }
+    
+    func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) -> UILabel {
+        let dynamicLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        dynamicLabel.text = labelText
+        dynamicLabel.font = UIFont.boldSystemFont(ofSize: size)
+        dynamicLabel.textColor = Environment.textColor
         
+        return dynamicLabel
     }
     
     func setStaticLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11) {
-        var staticLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
+        let staticLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height))
         staticLabel.text = labelText
         staticLabel.font = UIFont.boldSystemFont(ofSize: size)
         staticLabel.textColor = Environment.textColor
