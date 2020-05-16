@@ -15,6 +15,10 @@ public class BoardView: UIView {
     var recoveryTimeLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     var mortalityRateValue: Int = 30
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var canReinfect: Bool = false
+    
+    var enableReinfectionButton: MyButton = MyButton()
+    var disableReinfectionButton: MyButton = MyButton()
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
     let buttonSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionButton, height: Int(Environment.screenHeight)/Environment.proportionButton)
@@ -63,7 +67,7 @@ public class BoardView: UIView {
         mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", parameterValue: mortalityRateValue, posX: 7, posY: 34.5)
         self.addSubview(mortalityRateLabel)
         setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
-        createReinfectionButton(posX: 15.5, posY: 36, color: UIColor.black)
+        createReinfectionButton(posX: 16, posY: 36, color: UIColor.black)
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
@@ -108,7 +112,7 @@ public class BoardView: UIView {
         returnButton.backgroundColor = .clear
         returnButton.layer.cornerRadius = 5
         returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = Environment.textColor.cgColor//UIColor.black.cgColor
+        returnButton.layer.borderColor = UIColor.black.cgColor//Environment.textColor.cgColor
         //adding the text
         returnButton.setTitle(buttonLabel, for: .normal)
         returnButton.backgroundColor = UIColor.white
@@ -142,33 +146,35 @@ public class BoardView: UIView {
     }
     
     func createReinfectionButton(posX: Double, posY: Double, color: UIColor = Environment.textColor) {
-        var returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
+        enableReinfectionButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
-        returnButton.backgroundColor = .clear
-        returnButton.layer.cornerRadius = 5
-        returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
+        enableReinfectionButton.backgroundColor = .clear
+        enableReinfectionButton.layer.cornerRadius = 5
+        enableReinfectionButton.layer.borderWidth = 1
+        enableReinfectionButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
         //adding the text
-        returnButton.setTitle("Yes", for: .normal)
-        returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(color, for: .normal)
-        returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
-        returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
-        self.addSubview(returnButton)
+        enableReinfectionButton.setTitle("Yes", for: .normal)
+        enableReinfectionButton.backgroundColor = UIColor.white
+        enableReinfectionButton.setTitleColor(color, for: .normal)
+        enableReinfectionButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
+        enableReinfectionButton.id = "enableReinfection"
+        enableReinfectionButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
+        self.addSubview(enableReinfectionButton)
        
-        returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX + 2.5), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
+        disableReinfectionButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX + 2.5), y: (CGFloat(posY) * buttonSize.height), width: 2 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
-        returnButton.backgroundColor = .clear
-        returnButton.layer.cornerRadius = 5
-        returnButton.layer.borderWidth = 1
-        returnButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
+        disableReinfectionButton.backgroundColor = .clear
+        disableReinfectionButton.layer.cornerRadius = 5
+        disableReinfectionButton.layer.borderWidth = 1
+        disableReinfectionButton.layer.borderColor = color.cgColor//UIColor.black.cgColor
         //adding the text
-        returnButton.setTitle("No", for: .normal)
-        returnButton.backgroundColor = UIColor.white
-        returnButton.setTitleColor(color, for: .normal)
-        returnButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
-        returnButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
-        self.addSubview(returnButton)
+        disableReinfectionButton.setTitle("No", for: .normal)
+        disableReinfectionButton.backgroundColor = Environment.textColor
+        disableReinfectionButton.setTitleColor(UIColor.white, for: .normal)
+        disableReinfectionButton.titleLabel?.font = UIFont.systemFont(ofSize: 12.0)
+        disableReinfectionButton.id = "disableReinfection"
+        disableReinfectionButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
+        self.addSubview(disableReinfectionButton)
     }
     
     // Manda a informacao de qual agente foi clicado atraves do delegate
@@ -213,6 +219,21 @@ public class BoardView: UIView {
             if mortalityRateValue == 0 {
                 self.mortalityRateLabel.frame.origin.x += 4
             }
+        } else if sender.id == "enableReinfection" {
+            enableReinfectionButton.backgroundColor = Environment.textColor
+            enableReinfectionButton.setTitleColor(UIColor.white, for: .normal)
+//            disableReinfectionButton.layer.borderColor = UIColor.black.cgColor
+            disableReinfectionButton.backgroundColor = UIColor.white
+            disableReinfectionButton.setTitleColor(UIColor.black, for: .normal)
+            
+        } else if sender.id == "disableReinfection" {
+//            enableReinfectionButton.layer.borderColor = UIColor.black.cgColor
+            enableReinfectionButton.backgroundColor = UIColor.white
+            enableReinfectionButton.setTitleColor(UIColor.black, for: .normal)
+            
+//            disableReinfectionButton.layer.borderColor = UIColor.black.cgColor
+            disableReinfectionButton.backgroundColor = Environment.textColor
+            disableReinfectionButton.setTitleColor(UIColor.white, for: .normal)
         }
         
         self.speedNumber.text = "\(speedValue)x"

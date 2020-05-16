@@ -78,6 +78,10 @@ public class BoardController: agentDelegate, buttonDelegate {
             if mortalityRate > 0 {
                 mortalityRate -= 10
             }
+        case "enableReinfection":
+            canReinfect = true
+        case "disableReinfection":
+            canReinfect = false
         default:
             print("invalid button pressed")
         }
