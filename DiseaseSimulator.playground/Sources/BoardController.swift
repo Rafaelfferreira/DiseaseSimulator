@@ -5,6 +5,8 @@ import UIKit
 
 public class BoardController: agentDelegate, buttonDelegate {
     
+    weak var statusUpdateDelegate: statusUpdateDelegate? //delegates the actions to be taken when an agent is clicked on
+    
     // variables concerning the functioning of the simulation
     var board: [[Agent]]
     public var isRunning: Bool = false
@@ -17,23 +19,38 @@ public class BoardController: agentDelegate, buttonDelegate {
     var mortalityRate: Int = 30 //what are the chances that an infected person wil die
     var canReinfect: Bool = false
     
+    // var that keep control of the status of the board
+    var healthyNumbers : Int = 0
+    var infectedNumbers : Int = 0
+    var recoveredNumbers : Int = 0
+    var deceasedNumbers : Int = 0
+    
+    
     public init(boardView: BoardView) {
         self.board = boardView.initBoard(agentsRecoveryTime: recoveryTime, agentsMortalityRate: mortalityRate) //Mudar isso aqui para o metodo que inicializa os quadradinhos
         boardView.agentDelegate = self
         boardView.defaultButtonDelegate = self
+        self.statusUpdateDelegate = boardView
     }
     
     func agentClicked(_ button: Agent) {
         if button.status == .inactive {
             button.status = .healthy
+            healthyNumbers += 1
         }
         else if button.status == .infected {
             button.status = .healthy
+            infectedNumbers -= 1
+            healthyNumbers += 1
         }
         else if button.status == .healthy{
             button.status = .infected
             button.timeUntilRecovery = recoveryTime
+            healthyNumbers -= 1
+            infectedNumbers += 1
         }
+        
+        statusUpdateDelegate?.updateData(healthy: healthyNumbers, infected: infectedNumbers, recovered: recoveredNumbers, deceased: deceasedNumbers)
     }
     
     func buttonDidPress(_ button: MyButton) {
@@ -101,8 +118,8 @@ public class BoardController: agentDelegate, buttonDelegate {
     public func step() {
         //scans the board and find which cells would change
         //the indexes inside the for represent their index in the array, the other part (line or column) is the object in that position
-        for (lineIndex, line) in board.enumerated() { //goes through each line
-            for (columnIndex, column) in line.enumerated() { //goes through each column, column is the Agent in case
+        for (_, line) in board.enumerated() { //goes through each line
+            for (_, column) in line.enumerated() { //goes through each column, column is the Agent in case
                 if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
                     if column.status == .healthy || (canReinfect && column.status == .recovered ){
                         checkSickNeighbours(agent: column)
@@ -110,7 +127,12 @@ public class BoardController: agentDelegate, buttonDelegate {
                         column.timeUntilRecovery -= 1
                         if column.timeUntilRecovery == column.periodOfDying && column.survivalRoll < mortalityRate {
                             column.status = .dead
+                            infectedNumbers -= 1
+                            deceasedNumbers += 1
                         }
+                    } else if column.timeUntilRecovery == 0 && column.status == .infected{
+                        column.status = .recovered
+                        recoveredNumbers += 1
                     }
                     moveRandomly(agent: column)
                 }
@@ -118,6 +140,7 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         
         updateBoard()
+        statusUpdateDelegate?.updateData(healthy: healthyNumbers, infected: infectedNumbers, recovered: recoveredNumbers, deceased: deceasedNumbers)
     }
     
     public func checkSickNeighbours(agent: Agent){ //check among the neighbours of the cell if one of them is sick
@@ -205,16 +228,20 @@ public class BoardController: agentDelegate, buttonDelegate {
     }
 }
 
+//function that starts the playground view, this happens in a function to hide the view creation from the user
+public func initiateBoard() -> BoardView{
+    let view = BoardView(frame: CGRect(x: 20, y: 0, width: 480, height: 600))
+    return view
+}
+
+protocol statusUpdateDelegate: class {
+    func updateData(healthy: Int, infected: Int, recovered: Int, deceased: Int)
+}
+
 protocol agentDelegate: class {
     func agentClicked(_ button: Agent)
 }
 
 protocol buttonDelegate: class {
     func buttonDidPress(_ button: MyButton)
-}
-
-//function that starts the playground view, this happens in a function to hide the view creation from the user
-public func initiateBoard() -> BoardView{
-    let view = BoardView(frame: CGRect(x: 20, y: 0, width: 480, height: 600))
-    return view
 }

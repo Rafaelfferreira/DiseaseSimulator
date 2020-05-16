@@ -10,13 +10,13 @@ public class Agent: UIButton {
     var periodOfDying: Int //represents in which period (in the countdown of recovery time) will the agent die (if he's going to)
     var survivalRoll: Int = 0
     
-    var timeUntilRecovery: Int { //starts with one but have to be initialized whenever an agent gets sick
-        didSet {
-            if timeUntilRecovery == 0 && self.status == .infected{
-                self.status = .recovered
-            }
-        }
-    }
+    var timeUntilRecovery: Int //{ //starts with one but have to be initialized whenever an agent gets sick
+//        didSet {
+//            if timeUntilRecovery == 0 && self.status == .infected{
+//                self.status = .recovered
+//            }
+//        }
+//    }
     
     var status: agentStatus {
         didSet { //observer that runs this code everytime the value of alive changes

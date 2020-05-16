@@ -1,8 +1,7 @@
 import Foundation
 import UIKit
 
-public class BoardView: UIView {
-    
+public class BoardView: UIView, statusUpdateDelegate {
     weak var agentDelegate: agentDelegate? //delegates the actions to be taken when an agent is clicked on
     weak var defaultButtonDelegate: buttonDelegate?
     
@@ -17,6 +16,33 @@ public class BoardView: UIView {
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     var canReinfect: Bool = false
     var isRunning: Bool = false //just updates the label on the startButton
+    
+    //vars about the current status of the agents on the board
+    var healthyAgents: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var infectedAgents: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var recoveredAgents: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    var deceasedAgents: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    
+    var healthyNumbers: Int = 0 {
+        didSet {
+            healthyAgents.text = "\(healthyNumbers)"
+        }
+    }
+    var infectedNumbers: Int = 0 {
+        didSet {
+            infectedAgents.text = "\(infectedNumbers)"
+        }
+    }
+    var recoveredNumbers: Int = 0 {
+        didSet {
+            recoveredAgents.text = "\(recoveredNumbers)"
+        }
+    }
+    var deceasedNumbers: Int = 0 {
+        didSet {
+            deceasedAgents.text = "\(deceasedNumbers)"
+        }
+    }
     
     var enableReinfectionButton: MyButton = MyButton()
     var disableReinfectionButton: MyButton = MyButton()
@@ -79,13 +105,36 @@ public class BoardView: UIView {
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
-        setStaticLabel(labelText: "Status:", posX: 23.8, posY: 31.7, size: 15, color: UIColor.black)
-        setStaticLabel(labelText: "Healthy: 1010", posX: 23, posY: 32.8, color: Environment.healthyColor)
-        setStaticLabel(labelText: "Infected: 1000", posX: 23, posY: 33.8, color: Environment.infectedColor)
-        setStaticLabel(labelText: "Recovered: 1000", posX: 23, posY: 34.8, color: Environment.recoveredColor)
-        setStaticLabel(labelText: "Deceased: 1000", posX: 23, posY: 35.8, color: Environment.deadColor)
+        setStatusLabels(posX: 23, posY: 32.8)
+        setStaticLabel(labelText: "Status", posX: 23.8, posY: 31.7, size: 15, color: UIColor.black)
+//        setStatusLabels(labelText: "Healthy", posX: 23, posY: 32.8, color: Environment.healthyColor)
+//        setStatusLabels(labelText: "Infected", posX: 23, posY: 33.8, color: Environment.infectedColor)
+//        setStatusLabels(labelText: "Recovered", posX: 23, posY: 34.8, color: Environment.recoveredColor)
+//        setStatusLabels(labelText: "Deceased", posX: 23, posY: 35.8, color: Environment.deadColor)
         
         return board
+    }
+    
+    func setStatusLabels(posX: Double, posY: Double, size: CGFloat = 11) {
+        setStaticLabel(labelText: "Healthy: ", posX: posX, posY: posY, color: Environment.healthyColor)
+        healthyAgents = setDynamicLabel(labelText: "0", posX: posX + 3, posY: posY, color: UIColor.black)
+        healthyAgents.textAlignment = .left
+        self.addSubview(healthyAgents)
+        
+        setStaticLabel(labelText: "Infected: ", posX: posX, posY: posY + 1, color: Environment.infectedColor)
+        infectedAgents = setDynamicLabel(labelText: "0", posX: posX + 3.2, posY: posY + 1, color: UIColor.black)
+        infectedAgents.textAlignment = .left
+        self.addSubview(infectedAgents)
+        
+        setStaticLabel(labelText: "Recovered: ", posX: posX, posY: posY + 2, color: Environment.recoveredColor)
+        recoveredAgents = setDynamicLabel(labelText: "0", posX: posX + 4, posY: posY + 2, color: UIColor.black)
+        recoveredAgents.textAlignment = .left
+        self.addSubview(recoveredAgents)
+        
+        setStaticLabel(labelText: "Deceased: ", posX: posX, posY: posY + 3, color: Environment.deadColor)
+        deceasedAgents = setDynamicLabel(labelText: "0", posX: posX + 3.7, posY: posY + 3, color: UIColor.black)
+        deceasedAgents.textAlignment = .left
+        self.addSubview(deceasedAgents)
     }
     
     func setParameterControl(parameterName: String, buttonID: String, parameterValue: Int , posX: Double, posY: Double) -> UILabel {
@@ -114,7 +163,7 @@ public class BoardView: UIView {
     
     //function that creates buttons with the default style of this playground.
     //the X and Y positions are relative to the width and the height of the cells
-    func createDefaultButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double, color: UIColor = Environment.textColor){ //-> UIButton{
+    func createDefaultButton(buttonLabel: String, buttonID: String, posX: Double, posY: Double, color: UIColor = Environment.textColor){
         let returnButton = MyButton(frame: CGRect(x: buttonSize.width * CGFloat(posX), y: (CGFloat(posY) * buttonSize.height), width: 4.5 * buttonSize.width, height: buttonSize.height * 1.25))
         //making it rounder
         returnButton.backgroundColor = .clear
@@ -183,6 +232,13 @@ public class BoardView: UIView {
         disableReinfectionButton.id = "disableReinfection"
         disableReinfectionButton.addTarget(self, action: #selector(buttonDelegate), for: .touchUpInside)
         self.addSubview(disableReinfectionButton)
+    }
+    
+    func updateData(healthy: Int, infected: Int, recovered: Int, deceased: Int) {
+        healthyNumbers = healthy
+        infectedNumbers = infected
+        recoveredNumbers = recovered
+        deceasedNumbers = deceased
     }
     
     // Manda a informacao de qual agente foi clicado atraves do delegate
