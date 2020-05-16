@@ -16,6 +16,7 @@ public class BoardView: UIView {
     var mortalityRateValue: Int = 30
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     var canReinfect: Bool = false
+    var isRunning: Bool = false //just updates the label on the startButton
     
     var enableReinfectionButton: MyButton = MyButton()
     var disableReinfectionButton: MyButton = MyButton()
@@ -185,7 +186,16 @@ public class BoardView: UIView {
     @objc func buttonDelegate(sender: MyButton) {
         defaultButtonDelegate?.buttonDidPress(sender)
         
-        if sender.id == "reduceSpeed" && speedValue > 1 {
+        if sender.id == "Start" {
+            isRunning = !isRunning
+            
+            if isRunning == true {
+                sender.setTitle("Stop", for: .normal)
+            } else {
+                sender.setTitle("Start", for: .normal)
+            }
+        }
+        else if sender.id == "reduceSpeed" && speedValue > 1 {
             speedValue -= 1
         } else if sender.id == "increaseSpeed" && speedValue < 5 {
             speedValue += 1
