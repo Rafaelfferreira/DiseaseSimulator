@@ -26,7 +26,6 @@ public class Agent: UIButton {
                 self.backgroundColor = Environment.neutralColor
             case .infected:
                 self.backgroundColor = Environment.infectedColor
-                survivalCheck()
             case .healthy:
                 self.backgroundColor = Environment.healthyColor
             case .recovered:
@@ -60,12 +59,9 @@ public class Agent: UIButton {
     }
     
     // checks if the current agent will survive the disease for  another period
-    func survivalCheck() {
+    func survivalCheck(currentRecoveryTime: Int) {
         survivalRoll = Int.random(in: 1...100) //if the roll is less than the mortalityRate the agent DIES
-        if survivalRoll <= chanceOfDying {
-            var randomPeriod = Int.random(in: 1...((recoveryTime/3)*2))
-            self.periodOfDying = randomPeriod
-        }
+        self.periodOfDying = Int.random(in: 1...((currentRecoveryTime/3)*2))
     }
     
     public func findNeighbours(position: (line: Int,row: Int)) -> [(Int,Int)] {

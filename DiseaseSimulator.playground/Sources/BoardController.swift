@@ -46,6 +46,7 @@ public class BoardController: agentDelegate, buttonDelegate {
         else if button.status == .healthy{
             button.status = .infected
             button.timeUntilRecovery = recoveryTime
+            button.survivalCheck(currentRecoveryTime: recoveryTime)
             healthyNumbers -= 1
             infectedNumbers += 1
         }
@@ -121,16 +122,20 @@ public class BoardController: agentDelegate, buttonDelegate {
         for (_, line) in board.enumerated() { //goes through each line
             for (_, column) in line.enumerated() { //goes through each column, column is the Agent in case
                 if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
+                    print(column.timeUntilRecovery)
                     if column.status == .healthy || (canReinfect && column.status == .recovered ){
                         checkSickNeighbours(agent: column)
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
                         column.timeUntilRecovery -= 1
                         if column.timeUntilRecovery == column.periodOfDying && column.survivalRoll < mortalityRate {
+                            print("deveria morrer")
                             column.status = .dead
                             infectedNumbers -= 1
                             deceasedNumbers += 1
                         }
                     } else if column.timeUntilRecovery == 0 && column.status == .infected{
+                        print(column.periodOfDying)
+                        print("\(column.survivalRoll) > \(mortalityRate)")
                         column.status = .recovered
                         recoveredNumbers += 1
                     }
@@ -151,6 +156,7 @@ public class BoardController: agentDelegate, buttonDelegate {
                     let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
                     if healthyRoll <= transmissionRate {
                         agent.status = .infected
+                        agent.survivalCheck(currentRecoveryTime: recoveryTime)
                         agent.timeUntilRecovery = recoveryTime
                         gotInfected = true
                     }
