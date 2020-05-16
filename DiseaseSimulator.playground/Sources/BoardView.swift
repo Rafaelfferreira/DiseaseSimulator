@@ -13,7 +13,7 @@ public class BoardView: UIView {
     var transmissionLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     var recoveryTimeValue: Int = 20
     var recoveryTimeLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    var mortalityRateValue: Int = 20
+    var mortalityRateValue: Int = 30
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
@@ -203,11 +203,22 @@ public class BoardView: UIView {
             if recoveryTimeValue == 5 {
                 self.recoveryTimeLabel.frame.origin.x += 4
             }
+        } else if sender.id == "increaseMortality" && mortalityRateValue < 100 {
+            if mortalityRateValue == 0 {
+                self.mortalityRateLabel.frame.origin.x -= 4
+            }
+            mortalityRateValue += 10
+        } else if sender.id == "reduceMortality" && mortalityRateValue > 5 {
+            mortalityRateValue -= 10
+            if mortalityRateValue == 0 {
+                self.mortalityRateLabel.frame.origin.x += 4
+            }
         }
         
         self.speedNumber.text = "\(speedValue)x"
         self.transmissionLabel.text = "\(transmissionValue)%"
         self.recoveryTimeLabel.text = "\(recoveryTimeValue) steps"
+        self.mortalityRateLabel.text = "\(mortalityRateValue)%"
     }
 }
 

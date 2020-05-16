@@ -70,6 +70,14 @@ public class BoardController: agentDelegate, buttonDelegate {
             if recoveryTime < 40 {
                 recoveryTime += 5
             }
+        case "increaseMortality":
+            if mortalityRate < 100 {
+                mortalityRate += 10
+            }
+        case "reduceMortality":
+            if mortalityRate > 0 {
+                mortalityRate -= 10
+            }
         default:
             print("invalid button pressed")
         }
@@ -81,7 +89,6 @@ public class BoardController: agentDelegate, buttonDelegate {
             step()
             DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
                 self.start()
-                //print(self.recoveryTime)
             }
         }
     }
@@ -97,7 +104,7 @@ public class BoardController: agentDelegate, buttonDelegate {
                         checkSickNeighbours(agent: column)
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
                         column.timeUntilRecovery -= 1
-                        if column.timeUntilRecovery == column.periodOfDying {
+                        if column.timeUntilRecovery == column.periodOfDying && column.survivalRoll < mortalityRate {
                             column.status = .dead
                         }
                     }

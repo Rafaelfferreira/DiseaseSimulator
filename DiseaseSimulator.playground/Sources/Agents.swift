@@ -8,6 +8,7 @@ public class Agent: UIButton {
     var recoveryTime: Int
     var chanceOfDying: Int
     var periodOfDying: Int //represents in which period (in the countdown of recovery time) will the agent die (if he's going to)
+    var survivalRoll: Int = 0
     
     var timeUntilRecovery: Int { //starts with one but have to be initialized whenever an agent gets sick
         didSet {
@@ -60,10 +61,9 @@ public class Agent: UIButton {
     
     // checks if the current agent will survive the disease for  another period
     func survivalCheck() {
-        let survivalRoll = Int.random(in: 1...100) //if the roll is less than the mortalityRate the agent DIES
+        survivalRoll = Int.random(in: 1...100) //if the roll is less than the mortalityRate the agent DIES
         if survivalRoll <= chanceOfDying {
             var randomPeriod = Int.random(in: 1...((recoveryTime/3)*2))
-            //print(randomPeriod)
             self.periodOfDying = randomPeriod
         }
     }
