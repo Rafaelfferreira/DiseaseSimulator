@@ -28,6 +28,13 @@ public class BoardView: UIView {
     func initBoard(agentsRecoveryTime: Int, agentsMortalityRate: Int) -> [[Agent]] {
         var board: [[Agent]] = []
         
+        let titleLabel = UILabel(frame: CGRect(x: buttonSize.width * CGFloat(7), y: (CGFloat(0.7) * buttonSize.height), width: buttonSize.width*20, height: buttonSize.height * 1.5))
+        titleLabel.text = "Contagious Disease Simulator"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        titleLabel.textColor = Environment.textColor
+        self.addSubview(titleLabel)
+        //setStaticLabel(labelText: "Contagious Disease Simulator", posX: 7, posY: 0.7, size: 18)
+        
         //initializing the current line of agents
         for line in 1...(Environment.nLines) {
             var columnButtons: [Agent] = []
