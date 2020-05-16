@@ -11,7 +11,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     var board: [[Agent]]
     public var isRunning: Bool = false
     public var speed: Double = 1 //speed of the game evolution
-    var update: [(Int,Int,agentStatus,Int, Int)] = [] //an array that store the information of the cells that are moving
+    var update: [(Int,Int,agentStatus,Int, Int, Int)] = [] //an array that store the information of the cells that are moving
     
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
@@ -117,25 +117,23 @@ public class BoardController: agentDelegate, buttonDelegate {
     
     //simulates one step on the board
     public func step() {
+//        print(mortalityRate)
         //scans the board and find which cells would change
         //the indexes inside the for represent their index in the array, the other part (line or column) is the object in that position
         for (_, line) in board.enumerated() { //goes through each line
             for (_, column) in line.enumerated() { //goes through each column, column is the Agent in case
                 if column.status == .infected || column.status == .healthy || column.status == .recovered { //randomly moves the squares
-                    print(column.timeUntilRecovery)
                     if column.status == .healthy || (canReinfect && column.status == .recovered ){
                         checkSickNeighbours(agent: column)
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
                         column.timeUntilRecovery -= 1
                         if column.timeUntilRecovery == column.periodOfDying && column.survivalRoll < mortalityRate {
-                            print("deveria morrer")
+                            print("\(column.survivalRoll) < \(mortalityRate)")
                             column.status = .dead
                             infectedNumbers -= 1
                             deceasedNumbers += 1
                         }
                     } else if column.timeUntilRecovery == 0 && column.status == .infected{
-                        print(column.periodOfDying)
-                        print("\(column.survivalRoll) > \(mortalityRate)")
                         column.status = .recovered
                         recoveredNumbers += 1
                     }
@@ -169,32 +167,32 @@ public class BoardController: agentDelegate, buttonDelegate {
     func moveRandomly(agent: Agent) {
         let currentStatus = agent.status
         let direction = Int.random(in: 0 ... 3)
-        
+        print(agent.survivalRoll)
         
         switch (direction) {
         case 0: //Up
             if (agent.position.0 > 0) && (board[agent.position.0 - 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 - 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
+                self.update.append((agent.position.0 - 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying, agent.survivalRoll))
             }
         case 1: //Right
             if (agent.position.1 < Environment.nColumns - 1) && (board[agent.position.0][agent.position.1 + 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 + 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
+                self.update.append((agent.position.0 , agent.position.1 + 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying, agent.survivalRoll))
             }
         case 2: //Down
             if (agent.position.0 < Environment.nLines - 1) && (board[agent.position.0 + 1][agent.position.1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0 + 1][agent.position.1].status = .willBeOccupied
-                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
+                self.update.append((agent.position.0 + 1 , agent.position.1 , currentStatus, agent.timeUntilRecovery, agent.periodOfDying, agent.survivalRoll))
             }
         case 3: //Left
             if (agent.position.1 > 0) && (board[agent.position.0][agent.position.1 - 1].status == .inactive){
                 board[agent.position.0][agent.position.1].status = .inactive
                 board[agent.position.0][agent.position.1 - 1].status = .willBeOccupied
-                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying))
+                self.update.append((agent.position.0 , agent.position.1 - 1, currentStatus, agent.timeUntilRecovery, agent.periodOfDying, agent.survivalRoll))
             }
         default:
             return
@@ -207,6 +205,7 @@ public class BoardController: agentDelegate, buttonDelegate {
             board[agent.0][agent.1].status = agent.2
             board[agent.0][agent.1].timeUntilRecovery = agent.3
             board[agent.0][agent.1].periodOfDying = agent.4
+            board[agent.0][agent.1].survivalRoll = agent.5
         }
         
         update = []
