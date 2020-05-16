@@ -11,9 +11,9 @@ public class BoardView: UIView {
     var speedNumber: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0)) //actual label
     var transmissionValue: Int = 70
     var transmissionLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    var recoveryTimeValue: Int = 10
+    var recoveryTimeValue: Int = 20
     var recoveryTimeLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    var mortalityRateValue: Int = 30
+    var mortalityRateValue: Int = 20
     var mortalityRateLabel: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
     let agentSize = CGSize(width: Int(Environment.screenWidth)/Environment.proportionGrid, height: Int(Environment.screenHeight)/Environment.proportionGrid)
@@ -57,11 +57,13 @@ public class BoardView: UIView {
         transmissionLabel = setParameterControl(parameterName: "Transmission Rate", buttonID: "Transmission", parameterValue: transmissionValue, posX: 7, posY: 31.5)
         self.addSubview(transmissionLabel)
         recoveryTimeLabel = setParameterControl(parameterName: "Recovery Time", buttonID: "Recovery", parameterValue: recoveryTimeValue, posX: 7, posY: 33)
+        recoveryTimeLabel.text = "\(recoveryTimeValue) steps"
+        recoveryTimeLabel.frame.origin.x -= 15
         self.addSubview(recoveryTimeLabel)
         mortalityRateLabel = setParameterControl(parameterName: "Mortality Rate", buttonID: "Mortality", parameterValue: mortalityRateValue, posX: 7, posY: 34.5)
         self.addSubview(mortalityRateLabel)
         setStaticLabel(labelText: "Reinfection", posX: 7, posY: 36, size: 13)
-        createReinfectionButton(posX: 15, posY: 36, color: UIColor.black)
+        createReinfectionButton(posX: 15.5, posY: 36, color: UIColor.black)
         
         //RIGHT SIDE UI - SIMULATION STATUS
         //FIX ME: - UI labels refering to the status of the simulation - Not currently updated
@@ -77,8 +79,8 @@ public class BoardView: UIView {
     func setParameterControl(parameterName: String, buttonID: String, parameterValue: Int , posX: Double, posY: Double) -> UILabel {
         setStaticLabel(labelText: parameterName, posX: posX, posY: posY, size: 13)
         createRoundButton(buttonLabel: "-", buttonID: "reduce\(buttonID)", posX: posX + 7.75, posY: posY - 0.1, color: UIColor.black)
-        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 12.4, posY: posY - 0.1, color: UIColor.black)
-        return setDynamicLabel(labelText: "\(parameterValue)%", posX: posX + 9.85, posY: posY, size: 13, color: UIColor.black)
+        createRoundButton(buttonLabel: "+", buttonID: "increase\(buttonID)", posX: posX + 13.4, posY: posY - 0.1, color: UIColor.black)
+        return setDynamicLabel(labelText: "\(parameterValue)%", posX: posX + 10.45, posY: posY, size: 13, color: UIColor.black)
     }
     
     func setDynamicLabel(labelText: String, posX: Double, posY: Double, size: CGFloat = 11, color: UIColor = Environment.textColor) -> UILabel {
@@ -191,10 +193,21 @@ public class BoardView: UIView {
                 self.transmissionLabel.frame.origin.x += 4
             }
             transmissionValue -= 10
+        } else if sender.id == "increaseRecovery" && recoveryTimeValue < 40 {
+            if recoveryTimeValue == 5 {
+                self.recoveryTimeLabel.frame.origin.x -= 4
+            }
+            recoveryTimeValue += 5
+        } else if sender.id == "reduceRecovery" && recoveryTimeValue > 5 {
+            recoveryTimeValue -= 5
+            if recoveryTimeValue == 5 {
+                self.recoveryTimeLabel.frame.origin.x += 4
+            }
         }
         
         self.speedNumber.text = "\(speedValue)x"
         self.transmissionLabel.text = "\(transmissionValue)%"
+        self.recoveryTimeLabel.text = "\(recoveryTimeValue) steps"
     }
 }
 

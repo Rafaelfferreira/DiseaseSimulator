@@ -13,7 +13,7 @@ public class BoardController: agentDelegate, buttonDelegate {
     
     // specific variables regarding the parameters of the simulation
     var transmissionRate: Int = 70 //the chances of a heathy agent contract the disease by interacting with a sick one
-    var recoveryTime: Int = 30 //how many periods does an agent remains sick
+    var recoveryTime: Int = 20 //how many periods does an agent remains sick
     var mortalityRate: Int = 30 //what are the chances that an infected person wil die
     var canReinfect: Bool = false
     
@@ -59,8 +59,16 @@ public class BoardController: agentDelegate, buttonDelegate {
                 transmissionRate -= 10
             }
         case "increaseTransmission":
-            if speed < 100 {
+            if transmissionRate < 100 {
                 transmissionRate += 10
+            }
+        case "reduceRecovery":
+            if recoveryTime > 5 {
+                recoveryTime -= 5
+            }
+        case "increaseRecovery":
+            if recoveryTime < 40 {
+                recoveryTime += 5
             }
         default:
             print("invalid button pressed")
@@ -73,7 +81,7 @@ public class BoardController: agentDelegate, buttonDelegate {
             step()
             DispatchQueue.main.asyncAfter(deadline: .now() + (1/(1.5*speed))) { //Faz uma autochamada apos passar determinado tempo
                 self.start()
-                print(self.transmissionRate)
+                //print(self.recoveryTime)
             }
         }
     }
