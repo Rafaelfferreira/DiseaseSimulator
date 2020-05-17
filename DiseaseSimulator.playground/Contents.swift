@@ -11,4 +11,9 @@ let controller = BoardController(boardView: board)
 
 PlaygroundPage.current.liveView = board
 /*:#### How does it work?
-The user can click around on the board to initialize subjects and make the healthy or infected (by double-clicking on them to change their status). After that you can set up the parameters of the disease on the console below the board and click play to start the simulation. The status of the subjects on the board are color-coded, you can see what each color means by looking at the status date displayed on the bottom-right corner of the board.*/
+The user can click around on the board to initialize subjects and make the healthy or infected (by double-clicking on them to change their status). After that you can set up the parameters of the disease on the console below the board and click play to start the simulation. The status of the subjects on the board are color-coded, you can see what each color means by looking at the status date displayed on the bottom-right corner of the board.
+ 
+ Below is a line of code that you can use to set agents on the board programmatically via code. Just fill the number of agents in that you want to be healthy or infected on the respective fields, and run both those lines:
+ (the function is limited to 300 agents of each type max)*/
+controller.populateBoard(healthy: 100, infected: 10)
+PlaygroundPage.current.liveView = board

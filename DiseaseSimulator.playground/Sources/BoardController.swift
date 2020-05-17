@@ -238,6 +238,53 @@ public class BoardController: agentDelegate, buttonDelegate {
         deceasedNumbers = 0
         statusUpdateDelegate?.updateData(healthy: healthyNumbers, infected: infectedNumbers, recovered: recoveredNumbers, deceased: deceasedNumbers)
     }
+    
+    public func populateBoard(healthy: Int, infected: Int) {
+        if healthy > 300 || infected > 300 { return }
+        
+        healthyNumbers = healthy
+        infectedNumbers = infected
+        statusUpdateDelegate?.updateData(healthy: healthyNumbers, infected: infectedNumbers, recovered: recoveredNumbers, deceased: deceasedNumbers)
+        var healthyTemp = healthy
+        var infectedTemp = infected
+        
+        var placedHealthy = false
+        var placedInfected = false
+        var randomLine: Int = 0
+        var randomColumn: Int = 0
+        //keeps populating until all the agents have been placed
+        while healthyTemp > 0 || infectedTemp > 0 {
+            // placing the healthy agent
+            if healthyTemp > 0 {
+                while placedHealthy == false {
+                    randomLine = Int.random(in: 0 ... Environment.nLines-1)
+                    randomColumn = Int.random(in: 0 ... Environment.nColumns-1)
+                    
+                    if board[randomLine][randomColumn].status == .inactive {
+                        board[randomLine][randomColumn].status = .healthy
+                        placedHealthy = true
+                        healthyTemp -= 1
+                    }
+                }
+            }
+            if infectedTemp > 0 {
+                while placedInfected == false {
+                    randomLine = Int.random(in: 0 ... Environment.nLines-1)
+                    randomColumn = Int.random(in: 0 ... Environment.nColumns-1)
+                    
+                    if board[randomLine][randomColumn].status == .inactive {
+                        board[randomLine][randomColumn].status = .infected
+                        board[randomLine][randomColumn].timeUntilRecovery = recoveryTime
+                        board[randomLine][randomColumn].survivalCheck(currentRecoveryTime: recoveryTime)
+                        placedInfected = true
+                        infectedTemp -= 1
+                    }
+                }
+            }
+            placedHealthy = false
+            placedInfected = false
+        }
+    }
 }
 
 //function that starts the playground view, this happens in a function to hide the view creation from the user
