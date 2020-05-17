@@ -10,9 +10,5 @@ let board = initiateBoard()
 let controller = BoardController(boardView: board)
 
 PlaygroundPage.current.liveView = board
-
-/*:
-#### How does it work?
- 
- 
-*/
+/*:#### How does it work?
+The user can click around on the board to initialize subjects and make the healthy or infected (by double clicking on them to change their status). After that you can set up the parameters of the disease on the console below the board and click play to start the simulation. The status of the subjects on the board are color coded, you can see what each color mean by looking at the status date displayed on the bottom-right corner of the board.*/
