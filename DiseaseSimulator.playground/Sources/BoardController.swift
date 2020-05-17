@@ -128,7 +128,6 @@ public class BoardController: agentDelegate, buttonDelegate {
                     } else if column.timeUntilRecovery > 0 { //O agente esta infectado com a doenca
                         column.timeUntilRecovery -= 1
                         if column.timeUntilRecovery == column.periodOfDying && column.survivalRoll < mortalityRate {
-                            print("\(column.survivalRoll) < \(mortalityRate)")
                             column.status = .dead
                             infectedNumbers -= 1
                             deceasedNumbers += 1
@@ -136,6 +135,7 @@ public class BoardController: agentDelegate, buttonDelegate {
                     } else if column.timeUntilRecovery == 0 && column.status == .infected{
                         column.status = .recovered
                         recoveredNumbers += 1
+                        infectedNumbers -= 1
                     }
                     moveRandomly(agent: column)
                 }
@@ -153,10 +153,13 @@ public class BoardController: agentDelegate, buttonDelegate {
                 if board[neighbour.line][neighbour.column].status == .infected {
                     let healthyRoll = Int.random(in: 1...100) //if the roll is less than the transmissionRate the agent gets infected
                     if healthyRoll <= transmissionRate {
+                        if agent.status == .healthy { healthyNumbers -= 1 }
+                        else { recoveredNumbers -= 1 }
                         agent.status = .infected
                         agent.survivalCheck(currentRecoveryTime: recoveryTime)
                         agent.timeUntilRecovery = recoveryTime
                         gotInfected = true
+                        infectedNumbers += 1
                     }
                 }
             }
@@ -167,7 +170,6 @@ public class BoardController: agentDelegate, buttonDelegate {
     func moveRandomly(agent: Agent) {
         let currentStatus = agent.status
         let direction = Int.random(in: 0 ... 3)
-        print(agent.survivalRoll)
         
         switch (direction) {
         case 0: //Up
@@ -230,6 +232,11 @@ public class BoardController: agentDelegate, buttonDelegate {
         }
         
         kill = []
+        healthyNumbers = 0
+        infectedNumbers = 0
+        recoveredNumbers = 0
+        deceasedNumbers = 0
+        statusUpdateDelegate?.updateData(healthy: healthyNumbers, infected: infectedNumbers, recovered: recoveredNumbers, deceased: deceasedNumbers)
     }
 }
 
